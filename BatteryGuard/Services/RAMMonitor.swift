@@ -74,7 +74,7 @@ final class RAMMonitor: ObservableObject {
         let compressedBytes = UInt64(vmStats.compressor_page_count) * pageSize
         let freeBytes       = UInt64(vmStats.free_count)       * pageSize
 
-        ramStats = RAMStats(
+        let stats = RAMStats(
             totalBytes: totalBytes,
             activeBytes: activeBytes,
             inactiveBytes: inactiveBytes,
@@ -83,5 +83,10 @@ final class RAMMonitor: ObservableObject {
             freeBytes: freeBytes,
             timestamp: Date()
         )
+
+        // Pastikan update di main thread
+        DispatchQueue.main.async { [weak self] in
+            self?.ramStats = stats
+        }
     }
 }

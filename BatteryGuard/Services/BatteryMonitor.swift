@@ -78,9 +78,13 @@ final class BatteryMonitor: ObservableObject {
             guard type == kIOPSInternalBatteryType else { continue }
 
             // Parse status
+            // kIOPSCurrentCapacityKey sudah dalam satuan yang sama dengan kIOPSMaxCapacityKey
+            // Biasanya keduanya adalah persentase (0-100)
+            // Kita simpan sementara, akan di-override oleh AppleSmartBattery yang lebih akurat
             let currentCapacity = desc[kIOPSCurrentCapacityKey] as? Int ?? 0
             let maxCapacity = desc[kIOPSMaxCapacityKey] as? Int ?? 100
-            let percentage = maxCapacity > 0 ? (currentCapacity * 100 / maxCapacity) : currentCapacity
+            // Gunakan nilai langsung jika maxCapacity = 100, atau hitung jika unit berbeda
+            let percentage = (maxCapacity == 100) ? currentCapacity : (maxCapacity > 0 ? currentCapacity * 100 / maxCapacity : currentCapacity)
 
             let isCharging = (desc[kIOPSIsChargingKey] as? Bool) ?? false
             let isPluggedIn = (desc[kIOPSPowerSourceStateKey] as? String) == kIOPSACPowerValue
@@ -92,22 +96,24 @@ final class BatteryMonitor: ObservableObject {
                 ? (timeToFull >= 0 ? Double(timeToFull) : nil)
                 : (timeToEmpty >= 0 ? Double(timeToEmpty) : nil)
 
-            status = BatteryStatus(
-                percentage: percentage,
-                isCharging: isCharging,
-                isPluggedIn: isPluggedIn,
-                chargeLimitReached: false, // Di-update oleh ChargeLimitManager
-                lastUpdated: Date()
-            )
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                self.status = BatteryStatus(
+                    percentage: percentage,
+                    isCharging: isCharging,
+                    isPluggedIn: isPluggedIn,
+                    chargeLimitReached: false, // Di-update oleh ChargeLimitManager
+                    lastUpdated: Date()
+                )
+                self.powerFlow.timeRemainingMinutes = timeRemaining
 
-            powerFlow.timeRemainingMinutes = timeRemaining
-
-            // Health dari IOPSGetPowerSourceDescription
-            if let maxCap = desc["MaxCapacity"] as? Int {
-                health.maxCapacity = maxCap
-            }
-            if let designCap = desc["DesignCapacity"] as? Int {
-                health.designCapacity = designCap
+                // Health dari IOPSGetPowerSourceDescription
+                if let maxCap = desc["MaxCapacity"] as? Int {
+                    self.health.maxCapacity = maxCap
+                }
+                if let designCap = desc["DesignCapacity"] as? Int {
+                    self.health.designCapacity = designCap
+                }
             }
         }
     }
@@ -132,8 +138,8 @@ final class BatteryMonitor: ObservableObject {
                 .takeRetainedValue() as? T
         }
 
-        // MARK: Specs
-        specs = BatterySpecs(
+        // MARK: Specs (local var dahulu)
+        let newSpecs = BatterySpecs(
             designCapacity: getProperty("DesignCapacity"),
             serialNumber: getProperty("BatterySerialNumber"),
             manufacturer: getProperty("Manufacturer"),
@@ -142,12 +148,12 @@ final class BatteryMonitor: ObservableObject {
             firmwareVersion: nil // Jarang tersedia via IOKit publik
         )
 
-        // MARK: Health
+        // MARK: Health (local var)
         let cycleCount: Int? = getProperty("CycleCount")
         let maxCap: Int? = getProperty("AppleRawMaxCapacity")
         let designCap: Int? = getProperty("DesignCapacity")
 
-        health = BatteryHealth(
+        let newHealth = BatteryHealth(
             maxCapacity: maxCap,
             designCapacity: designCap,
             cycleCount: cycleCount,
@@ -155,7 +161,7 @@ final class BatteryMonitor: ObservableObject {
             maxCapacityPercent: getProperty("BatteryHealthMaxCapacityPercent")
         )
 
-        // MARK: Power Flow
+        // MARK: Power Flow (local var)
         // Voltage dalam mV, Amperage dalam mA dari IOKit
         let voltageMV: Int? = getProperty("Voltage")
         let amperageMa: Int? = getProperty("Amperage")
@@ -164,11 +170,25 @@ final class BatteryMonitor: ObservableObject {
         let voltage = voltageMV.map { Double($0) / 1000.0 }
         let amperage = amperageMa.map { Double($0) / 1000.0 }
 
-        powerFlow = PowerFlow(
+        let newPowerFlow = PowerFlow(
             amperage: amperage,
             voltage: voltage,
             timeRemainingMinutes: powerFlow.timeRemainingMinutes
         )
+
+        // MARK: Accurate Battery Percentage dari raw mAh
+        // CurrentCapacity (mAh saat ini) / AppleRawMaxCapacity (mAh max degraded) = % akurat
+        // Ini sama dengan yang ditampilkan macOS di menu bar
+        let currentCap: Int? = getProperty("CurrentCapacity")
+        let rawMaxCap: Int? = getProperty("AppleRawMaxCapacity")
+
+        if let curr = currentCap, let max = rawMaxCap, max > 0 {
+            let accuratePercent = min(100, (curr * 100) / max)
+            DispatchQueue.main.async { [weak self] in
+                // Override percentage dengan nilai yang lebih akurat dari IOKit
+                self?.status.percentage = accuratePercent
+            }
+        }
 
         // MARK: Battery Temperature (dari AppleSmartBattery)
         // Temperature key dalam unit 0.01°C (perlu dibagi 100)
@@ -176,6 +196,20 @@ final class BatteryMonitor: ObservableObject {
             let tempCelsius = Double(tempRaw) / 100.0
             // Note: TemperatureMonitor akan menggunakan nilai ini sebagai fallback
             _ = tempCelsius // Akan di-publish via TemperatureMonitor atau langsung
+        }
+
+        // Pastikan health & specs update di main thread (satu batch)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.specs = newSpecs
+            self.health = newHealth
+            // Preserve timeRemainingMinutes dari powerFlow yang sudah di-set sebelumnya
+            let preserved = self.powerFlow.timeRemainingMinutes
+            self.powerFlow = PowerFlow(
+                amperage: newPowerFlow.amperage,
+                voltage: newPowerFlow.voltage,
+                timeRemainingMinutes: preserved
+            )
         }
     }
 
@@ -187,7 +221,9 @@ final class BatteryMonitor: ObservableObject {
         guard let adapterRef = IOPSCopyExternalPowerAdapterDetails()?.takeRetainedValue(),
               let adapterDict = adapterRef as? [String: Any]
         else {
-            adapterInfo = .disconnected
+            DispatchQueue.main.async { [weak self] in
+                self?.adapterInfo = .disconnected
+            }
             return
         }
 
@@ -199,13 +235,17 @@ final class BatteryMonitor: ObservableObject {
         let name = adapterDict["Description"] as? String ??
                    adapterDict["Name"] as? String
 
-        adapterInfo = AdapterInfo(
+        let newAdapterInfo = AdapterInfo(
             wattage: wattage,
             amperage: amperage,
             voltage: voltage,
             name: name,
             family: adapterDict["Family"] as? String
         )
+
+        DispatchQueue.main.async { [weak self] in
+            self?.adapterInfo = newAdapterInfo
+        }
     }
 
     // MARK: - Helpers

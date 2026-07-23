@@ -60,7 +60,7 @@ final class TemperatureMonitor: ObservableObject {
         RunLoop.main.add(timer!, forMode: .common)
 
         // Baca langsung saat start
-        Task { await fetchTemperatures() }
+        Task { @MainActor [weak self] in await self?.fetchTemperatures() }
     }
 
     func stopMonitoring() {
@@ -82,12 +82,13 @@ final class TemperatureMonitor: ObservableObject {
     func setProvider(_ provider: TemperatureProviding) {
         self.provider = provider
         if isEnabled {
-            Task { await fetchTemperatures() }
+            Task { @MainActor [weak self] in await self?.fetchTemperatures() }
         }
     }
 
     // MARK: - Private
 
+    @MainActor
     private func fetchTemperatures() async {
         guard let provider = provider else { return }
         temperatures = await provider.fetchTemperatures()

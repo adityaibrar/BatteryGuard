@@ -87,12 +87,17 @@ final class NetworkSpeedMonitor: ObservableObject {
             }
         }
 
-        networkStats = NetworkStats(
+        let stats = NetworkStats(
             downloadBytesPerSec: totalDownload,
             uploadBytesPerSec: totalUpload,
             primaryInterface: primaryInterface,
             timestamp: now
         )
+
+        // Pastikan update di main thread
+        DispatchQueue.main.async { [weak self] in
+            self?.networkStats = stats
+        }
 
         // Update snapshot untuk iterasi berikutnya
         previousSnapshot = currentSnapshot

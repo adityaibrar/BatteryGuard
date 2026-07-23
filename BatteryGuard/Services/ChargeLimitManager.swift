@@ -97,14 +97,15 @@ final class ChargeLimitManager: ObservableObject {
     // MARK: - Verify Helper Connection
 
     func verifyHelperConnection() {
-        Task {
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
             do {
-                let version = try await connection.getHelperVersion()
-                helperVersion = version
-                lastError = nil
+                let version = try await self.connection.getHelperVersion()
+                self.helperVersion = version
+                self.lastError = nil
             } catch {
-                helperVersion = nil
-                lastError = error.localizedDescription
+                self.helperVersion = nil
+                self.lastError = error.localizedDescription
             }
         }
     }
@@ -112,40 +113,41 @@ final class ChargeLimitManager: ObservableObject {
     // MARK: - Private
 
     private func applyCurrentState() {
-        Task {
-            isApplying = true
-            defer { isApplying = false }
-
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            self.isApplying = true
+            defer { self.isApplying = false }
             do {
-                try await connection.applyChargeLimit(state.limitPercent)
-                lastError = nil
+                try await self.connection.applyChargeLimit(self.state.limitPercent)
+                self.lastError = nil
             } catch {
-                lastError = error.localizedDescription
+                self.lastError = error.localizedDescription
             }
         }
     }
 
     private func disableLimit() {
-        Task {
-            isApplying = true
-            defer { isApplying = false }
-
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            self.isApplying = true
+            defer { self.isApplying = false }
             do {
-                try await connection.disableChargeLimit()
-                lastError = nil
+                try await self.connection.disableChargeLimit()
+                self.lastError = nil
             } catch {
-                lastError = error.localizedDescription
+                self.lastError = error.localizedDescription
             }
         }
     }
 
     private func applyDischargeMode() {
-        Task {
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
             do {
-                try await connection.setDischargeMode(state.dischargeModeEnabled)
-                lastError = nil
+                try await self.connection.setDischargeMode(self.state.dischargeModeEnabled)
+                self.lastError = nil
             } catch {
-                lastError = error.localizedDescription
+                self.lastError = error.localizedDescription
             }
         }
     }
