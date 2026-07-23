@@ -1,0 +1,546 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		D29DAC973011F5D2008914E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D29DAC7D3011F5CF008914E1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D29DAC843011F5CF008914E1;
+			remoteInfo = BatteryGuard;
+		};
+		D29DACA13011F5D3008914E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D29DAC7D3011F5CF008914E1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D29DAC843011F5CF008914E1;
+			remoteInfo = BatteryGuard;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D29DAC853011F5CF008914E1 /* BatteryGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D29DAC963011F5D2008914E1 /* BatteryGuardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BatteryGuardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D29DACA03011F5D3008914E1 /* BatteryGuardUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BatteryGuardUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D29DAC873011F5CF008914E1 /* BatteryGuard */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BatteryGuard;
+			sourceTree = "<group>";
+		};
+		D29DAC993011F5D2008914E1 /* BatteryGuardTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BatteryGuardTests;
+			sourceTree = "<group>";
+		};
+		D29DACA33011F5D3008914E1 /* BatteryGuardUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = BatteryGuardUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D29DAC823011F5CF008914E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D29DAC933011F5D2008914E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D29DAC9D3011F5D3008914E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D29DAC7C3011F5CF008914E1 = {
+			isa = PBXGroup;
+			children = (
+				D29DAC873011F5CF008914E1 /* BatteryGuard */,
+				D29DAC993011F5D2008914E1 /* BatteryGuardTests */,
+				D29DACA33011F5D3008914E1 /* BatteryGuardUITests */,
+				D29DAC863011F5CF008914E1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		D29DAC863011F5CF008914E1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D29DAC853011F5CF008914E1 /* BatteryGuard.app */,
+				D29DAC963011F5D2008914E1 /* BatteryGuardTests.xctest */,
+				D29DACA03011F5D3008914E1 /* BatteryGuardUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D29DAC843011F5CF008914E1 /* BatteryGuard */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D29DACAA3011F5D3008914E1 /* Build configuration list for PBXNativeTarget "BatteryGuard" */;
+			buildPhases = (
+				D29DAC813011F5CF008914E1 /* Sources */,
+				D29DAC823011F5CF008914E1 /* Frameworks */,
+				D29DAC833011F5CF008914E1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D29DAC873011F5CF008914E1 /* BatteryGuard */,
+			);
+			name = BatteryGuard;
+			packageProductDependencies = (
+			);
+			productName = BatteryGuard;
+			productReference = D29DAC853011F5CF008914E1 /* BatteryGuard.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D29DAC953011F5D2008914E1 /* BatteryGuardTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D29DACAD3011F5D3008914E1 /* Build configuration list for PBXNativeTarget "BatteryGuardTests" */;
+			buildPhases = (
+				D29DAC923011F5D2008914E1 /* Sources */,
+				D29DAC933011F5D2008914E1 /* Frameworks */,
+				D29DAC943011F5D2008914E1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D29DAC983011F5D2008914E1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D29DAC993011F5D2008914E1 /* BatteryGuardTests */,
+			);
+			name = BatteryGuardTests;
+			packageProductDependencies = (
+			);
+			productName = BatteryGuardTests;
+			productReference = D29DAC963011F5D2008914E1 /* BatteryGuardTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D29DAC9F3011F5D3008914E1 /* BatteryGuardUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D29DACB03011F5D3008914E1 /* Build configuration list for PBXNativeTarget "BatteryGuardUITests" */;
+			buildPhases = (
+				D29DAC9C3011F5D3008914E1 /* Sources */,
+				D29DAC9D3011F5D3008914E1 /* Frameworks */,
+				D29DAC9E3011F5D3008914E1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D29DACA23011F5D3008914E1 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D29DACA33011F5D3008914E1 /* BatteryGuardUITests */,
+			);
+			name = BatteryGuardUITests;
+			packageProductDependencies = (
+			);
+			productName = BatteryGuardUITests;
+			productReference = D29DACA03011F5D3008914E1 /* BatteryGuardUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D29DAC7D3011F5CF008914E1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					D29DAC843011F5CF008914E1 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					D29DAC953011F5D2008914E1 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D29DAC843011F5CF008914E1;
+					};
+					D29DAC9F3011F5D3008914E1 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = D29DAC843011F5CF008914E1;
+					};
+				};
+			};
+			buildConfigurationList = D29DAC803011F5CF008914E1 /* Build configuration list for PBXProject "BatteryGuard" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D29DAC7C3011F5CF008914E1;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = D29DAC863011F5CF008914E1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D29DAC843011F5CF008914E1 /* BatteryGuard */,
+				D29DAC953011F5D2008914E1 /* BatteryGuardTests */,
+				D29DAC9F3011F5D3008914E1 /* BatteryGuardUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D29DAC833011F5CF008914E1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D29DAC943011F5D2008914E1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D29DAC9E3011F5D3008914E1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D29DAC813011F5CF008914E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D29DAC923011F5D2008914E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D29DAC9C3011F5D3008914E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D29DAC983011F5D2008914E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D29DAC843011F5CF008914E1 /* BatteryGuard */;
+			targetProxy = D29DAC973011F5D2008914E1 /* PBXContainerItemProxy */;
+		};
+		D29DACA23011F5D3008914E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D29DAC843011F5CF008914E1 /* BatteryGuard */;
+			targetProxy = D29DACA13011F5D3008914E1 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D29DACA83011F5D3008914E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D29DACA93011F5D3008914E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		D29DACAB3011F5D3008914E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BatteryGuard/BatteryGuard.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BatteryGuard/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibrarDev.BatteryGuard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D29DACAC3011F5D3008914E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BatteryGuard/BatteryGuard.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"BatteryGuard/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibrarDev.BatteryGuard;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D29DACAE3011F5D3008914E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibrarDev.BatteryGuardTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BatteryGuard.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BatteryGuard";
+			};
+			name = Debug;
+		};
+		D29DACAF3011F5D3008914E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibrarDev.BatteryGuardTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/BatteryGuard.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/BatteryGuard";
+			};
+			name = Release;
+		};
+		D29DACB13011F5D3008914E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibrarDev.BatteryGuardUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = BatteryGuard;
+			};
+			name = Debug;
+		};
+		D29DACB23011F5D3008914E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ibrarDev.BatteryGuardUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = BatteryGuard;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D29DAC803011F5CF008914E1 /* Build configuration list for PBXProject "BatteryGuard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D29DACA83011F5D3008914E1 /* Debug */,
+				D29DACA93011F5D3008914E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D29DACAA3011F5D3008914E1 /* Build configuration list for PBXNativeTarget "BatteryGuard" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D29DACAB3011F5D3008914E1 /* Debug */,
+				D29DACAC3011F5D3008914E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D29DACAD3011F5D3008914E1 /* Build configuration list for PBXNativeTarget "BatteryGuardTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D29DACAE3011F5D3008914E1 /* Debug */,
+				D29DACAF3011F5D3008914E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D29DACB03011F5D3008914E1 /* Build configuration list for PBXNativeTarget "BatteryGuardUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D29DACB13011F5D3008914E1 /* Debug */,
+				D29DACB23011F5D3008914E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D29DAC7D3011F5CF008914E1 /* Project object */;
+}
