@@ -117,10 +117,8 @@ final class SystemStatsViewModel: ObservableObject {
         ramMonitor.startMonitoring()
         networkMonitor.startMonitoring()
 
-        // Temperature monitoring hanya aktif jika user enable
-        if prefs.temperatureMonitoringEnabled {
-            tempMonitor.setEnabled(true)
-        }
+        // Temperature: selalu start — battery temp tersedia tanpa root via IOKit
+        tempMonitor.startMonitoring()
 
         chargeLimitManager.verifyHelperConnection()
     }

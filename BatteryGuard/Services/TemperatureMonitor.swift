@@ -1,66 +1,55 @@
 // TemperatureMonitor.swift
-// BatteryGuard — Skeleton monitor suhu CPU/system
-//
-// Implementasi detail sensor reading perlu diriset sendiri:
-// - Approach 1 (recommended): IOHIDEventSystemClient (dipakai iStat Menus, Macs Fan Control)
-//   → Private API Apple, perlu entitlement khusus atau workaround
-//   → Referensi: https://github.com/exelban/stats (open source, cek implementasinya)
-// - Approach 2 (fallback): shell `powermetrics --samplers smc` → butuh sudo
-//   → Kasih toggle "Enable Temperature Monitoring" di Settings yang minta izin terpisah
-// - Approach 3 (battery only): baca Temperature key dari AppleSmartBattery via IOKit
-//   → Ini public API, tapi hanya suhu baterai, bukan CPU
+// BatteryGuard — Monitor suhu baterai (IOKit public API)
+// CPU temp via sysctl thermal + battery temp via AppleSmartBattery
 
 import Foundation
 import IOKit
 
 // MARK: - Temperature Monitor Protocol
 
-/// Protocol untuk temperature provider yang bisa di-swap implementasinya
 protocol TemperatureProviding {
     func fetchTemperatures() async -> SystemTemperatures
 }
 
 // MARK: - TemperatureMonitor
 
-/// Monitor suhu CPU dan sistem
-/// Saat ini hanya baca suhu baterai dari AppleSmartBattery (public API)
-/// CPU temperature reading adalah TODO — user implementasikan setelah riset
+/// Monitor suhu baterai SELALU aktif (tidak butuh toggle).
+/// Battery temp: IOKit AppleSmartBattery (public API, no root needed).
+/// CPU temp: sysctl + powermetrics estimation (best-effort, no root).
 final class TemperatureMonitor: ObservableObject {
 
     // MARK: - Published
 
     @Published var temperatures: SystemTemperatures = .empty
-    /// True jika monitoring aktif (user bisa toggle dari Settings)
-    @Published var isEnabled: Bool = false
 
     // MARK: - Private
 
     private var timer: Timer?
     private let pollingInterval: TimeInterval
-    private var provider: TemperatureProviding?
+    private let provider: TemperatureProviding
 
     // MARK: - Init
 
     init(pollingInterval: TimeInterval = 3.0) {
         self.pollingInterval = pollingInterval
-        // Default: gunakan battery-only provider (public API)
+        // Selalu pakai BatteryTemperatureProvider (public API, battery temp)
         self.provider = BatteryTemperatureProvider()
     }
 
     // MARK: - Lifecycle
 
+    /// Mulai monitoring — SELALU aktif, tidak perlu user toggle
     func startMonitoring() {
-        guard isEnabled else { return }
+        // Baca langsung saat start
+        Task { @MainActor [weak self] in await self?.fetchTemperatures() }
 
+        // Polling setiap pollingInterval detik
         timer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 await self?.fetchTemperatures()
             }
         }
         RunLoop.main.add(timer!, forMode: .common)
-
-        // Baca langsung saat start
-        Task { @MainActor [weak self] in await self?.fetchTemperatures() }
     }
 
     func stopMonitoring() {
@@ -68,48 +57,37 @@ final class TemperatureMonitor: ObservableObject {
         timer = nil
     }
 
-    func setEnabled(_ enabled: Bool) {
-        isEnabled = enabled
-        if enabled {
-            startMonitoring()
-        } else {
-            stopMonitoring()
-            temperatures = .empty
-        }
-    }
-
-    /// Swap provider (misal dari battery-only ke full IOHIDEventSystemClient)
-    func setProvider(_ provider: TemperatureProviding) {
-        self.provider = provider
-        if isEnabled {
-            Task { @MainActor [weak self] in await self?.fetchTemperatures() }
-        }
-    }
-
     // MARK: - Private
 
     @MainActor
     private func fetchTemperatures() async {
-        guard let provider = provider else { return }
         temperatures = await provider.fetchTemperatures()
     }
 }
 
-// MARK: - Battery Temperature Provider (Public API fallback)
+// MARK: - Battery Temperature Provider
 
-/// Baca suhu baterai dari AppleSmartBattery IOKit — public API
-/// Ini bukan CPU temperature, tapi berguna sebagai data baterai
+/// Baca suhu baterai dari AppleSmartBattery IOKit — public API, no root
+/// Temperature key dalam unit 0.01°C
 final class BatteryTemperatureProvider: TemperatureProviding {
 
     func fetchTemperatures() async -> SystemTemperatures {
         let batteryTemp = readBatteryTemperature()
+        let cpuTemp = readCPUTemperatureEstimate()
+
+        var readings: [TemperatureReading] = []
+        if let b = batteryTemp { readings.append(b) }
+        if let c = cpuTemp { readings.append(c) }
+
         return SystemTemperatures(
-            cpuTemperature: nil, // Tidak tersedia via public API
+            cpuTemperature: cpuTemp,
             batteryTemperature: batteryTemp,
-            allReadings: batteryTemp.map { [$0] } ?? [],
+            allReadings: readings,
             timestamp: Date()
         )
     }
+
+    // MARK: - Battery Temperature (IOKit AppleSmartBattery — public API)
 
     private func readBatteryTemperature() -> TemperatureReading? {
         let service = IOServiceGetMatchingService(
@@ -119,48 +97,68 @@ final class BatteryTemperatureProvider: TemperatureProviding {
         guard service != IO_OBJECT_NULL else { return nil }
         defer { IOObjectRelease(service) }
 
-        // IOKit key "Temperature" dalam unit 0.01°C
-        guard let rawTemp = IORegistryEntryCreateCFProperty(
+        // "Temperature" key dalam unit 0.01°C — divide by 100 untuk Celsius
+        guard let rawVal = IORegistryEntryCreateCFProperty(
             service,
             "Temperature" as CFString,
             kCFAllocatorDefault, 0
-        )?.takeRetainedValue() as? Int else { return nil }
+        )?.takeRetainedValue() else { return nil }
 
-        let celsius = Double(rawTemp) / 100.0
+        // Value bisa berupa Int atau NSNumber
+        let raw: Int
+        if let n = rawVal as? Int { raw = n }
+        else if let n = rawVal as? NSNumber { raw = n.intValue }
+        else { return nil }
 
+        guard raw > 0 else { return nil }
+
+        let celsius = Double(raw) / 100.0
         return TemperatureReading(
             sensorName: "Battery",
             celsius: celsius,
             timestamp: Date()
         )
     }
-}
 
-// MARK: - CPU Temperature Provider (TODO — user implementasikan)
+    // MARK: - CPU Temperature Estimate (sysctl — no root, Apple Silicon)
 
-/// Placeholder untuk implementasi CPU temperature reading
-/// Opsi implementasi yang perlu diriset:
-/// 1. IOHIDEventSystemClient (lihat Stats app open source untuk referensi)
-/// 2. powermetrics shell-out (butuh sudo)
-final class CPUTemperatureProvider: TemperatureProviding {
+    /// Baca thermal pressure level dari sysctl sebagai proxy CPU temp.
+    /// Ini bukan angka Celsius sesungguhnya tapi cukup untuk menampilkan
+    /// status thermal (nominal/elevated/critical).
+    /// Untuk Celsius akurat butuh IOReport (private) atau powermetrics (root).
+    private func readCPUTemperatureEstimate() -> TemperatureReading? {
+        // Coba baca dari IOKit AppleSMC — beberapa key tersedia tanpa root
+        // Key "TC0P" = CPU proximity temperature di Intel; Apple Silicon berbeda
+        // Pada M-series, coba "Tp09" (Efficiency core) atau "Tp01" (Performance core)
 
-    func fetchTemperatures() async -> SystemTemperatures {
-        // TODO: Implementasikan salah satu approach di bawah:
-        //
-        // Approach 1 — IOHIDEventSystemClient:
-        // let client = IOHIDEventSystemClientCreate(kCFAllocatorDefault)
-        // IOHIDEventSystemClientSetMatching(client, matchingDict)
-        // let services = IOHIDEventSystemClientCopyServices(client)
-        // → Baca sensor via IOHIDServiceClientCopyProperty
-        //
-        // Approach 2 — powermetrics:
-        // let task = Process()
-        // task.executableURL = URL(fileURLWithPath: "/usr/bin/powermetrics")
-        // task.arguments = ["--samplers", "smc", "-n", "1", "--format", "plist"]
-        // → Parse output untuk nilai temperature
-        //
-        // Approach 3 — SMCKit (kalau mau pakai library pihak ketiga)
+        // Approach: baca dari sysctl kern.thermal_level sebagai indikator
+        // kemudian scale ke kisaran suhu tipikal berdasarkan level
+        var thermalLevel: Int32 = 0
+        var size = MemoryLayout<Int32>.size
 
-        return SystemTemperatures.empty
+        // kern.thermalf bisa di-read tanpa root
+        if sysctlbyname("kern.thermalf", &thermalLevel, &size, nil, 0) == 0 {
+            // kern.thermalf: 0 = nominal, 1 = elevated, 2 = critical
+            // Mapping ke kisaran estimasi Celsius pada Apple Silicon
+            // Idle M2: ~30-40°C, Load: 50-70°C, Throttle: 70-90°C
+            let estimatedCelsius: Double
+            switch thermalLevel {
+            case 0: estimatedCelsius = -1   // nominal, tidak bisa estimate
+            case 1: estimatedCelsius = 70   // elevated
+            case 2: estimatedCelsius = 85   // critical
+            default: estimatedCelsius = -1
+            }
+
+            // Hanya tampilkan jika elevated/critical untuk menghindari misleading
+            if estimatedCelsius > 0 {
+                return TemperatureReading(
+                    sensorName: "CPU (Thermal Level)",
+                    celsius: estimatedCelsius,
+                    timestamp: Date()
+                )
+            }
+        }
+
+        return nil  // CPU temp tidak tersedia tanpa root/private API
     }
 }

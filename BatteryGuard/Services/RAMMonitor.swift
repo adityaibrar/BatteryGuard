@@ -1,6 +1,6 @@
 // RAMMonitor.swift
 // BatteryGuard — Monitor penggunaan RAM via Mach API
-// Menggunakan host_statistics64 dengan HOST_VM_INFO64 — public API, tidak butuh privilege
+// Formula cocok dengan Activity Monitor macOS
 
 import Foundation
 
@@ -8,6 +8,11 @@ import Foundation
 
 /// Membaca statistik memori dari Mach kernel secara periodik
 /// API: host_statistics64(mach_host_self(), HOST_VM_INFO64, ...) → vm_statistics64_data_t
+///
+/// Formula cocok dengan Activity Monitor:
+///   Used     = active + wired + compressed
+///   Cached   = inactive + speculative (bukan "wasted", bisa reclaim)
+///   Free     = truly free pages
 final class RAMMonitor: ObservableObject {
 
     // MARK: - Published
@@ -48,7 +53,9 @@ final class RAMMonitor: ObservableObject {
     /// Baca vm_statistics64 dari Mach kernel
     private func readMemoryStats() {
         var vmStats = vm_statistics64_data_t()
-        var count = mach_msg_type_number_t(MemoryLayout<vm_statistics64_data_t>.size / MemoryLayout<integer_t>.size)
+        var count = mach_msg_type_number_t(
+            MemoryLayout<vm_statistics64_data_t>.size / MemoryLayout<integer_t>.size
+        )
 
         let result = withUnsafeMutablePointer(to: &vmStats) {
             $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
@@ -56,23 +63,29 @@ final class RAMMonitor: ObservableObject {
             }
         }
 
-        guard result == KERN_SUCCESS else {
-            // Gagal baca — tidak perlu crash, cukup log
-            return
-        }
+        guard result == KERN_SUCCESS else { return }
 
-        // Page size dari kernel (biasanya 16KB di Apple Silicon)
+        // Page size: 16384 bytes (16 KB) di Apple Silicon
         let pageSize = UInt64(vm_kernel_page_size)
 
-        // Total physical RAM dari ProcessInfo
+        // Total physical RAM
         let totalBytes = UInt64(ProcessInfo.processInfo.physicalMemory)
 
-        // Kalkulasi bytes per kategori
-        let activeBytes     = UInt64(vmStats.active_count)     * pageSize
-        let inactiveBytes   = UInt64(vmStats.inactive_count)   * pageSize
-        let wiredBytes      = UInt64(vmStats.wire_count)       * pageSize
-        let compressedBytes = UInt64(vmStats.compressor_page_count) * pageSize
-        let freeBytes       = UInt64(vmStats.free_count)       * pageSize
+        // Breakdown sesuai Activity Monitor:
+        // ┌─────────────────────────────────────────────────────┐
+        // │ "App Memory"  = active (pages sedang dipakai proses)│
+        // │ "Wired"       = wired (kernel, non-pageable)        │
+        // │ "Compressed"  = compressor_page_count               │
+        // │ "Cached"      = inactive + speculative              │
+        // │ "Free"        = free_count                          │
+        // │ "Used"        = App + Wired + Compressed            │
+        // └─────────────────────────────────────────────────────┘
+        let activeBytes      = UInt64(vmStats.active_count)          * pageSize
+        let inactiveBytes    = UInt64(vmStats.inactive_count)        * pageSize
+        let wiredBytes       = UInt64(vmStats.wire_count)            * pageSize
+        let compressedBytes  = UInt64(vmStats.compressor_page_count) * pageSize
+        let speculativeBytes = UInt64(vmStats.speculative_count)     * pageSize
+        let freeBytes        = UInt64(vmStats.free_count)            * pageSize
 
         let stats = RAMStats(
             totalBytes: totalBytes,
@@ -80,11 +93,12 @@ final class RAMMonitor: ObservableObject {
             inactiveBytes: inactiveBytes,
             wiredBytes: wiredBytes,
             compressedBytes: compressedBytes,
+            speculativeBytes: speculativeBytes,
             freeBytes: freeBytes,
             timestamp: Date()
         )
 
-        // Pastikan update di main thread
+        // Update di main thread
         DispatchQueue.main.async { [weak self] in
             self?.ramStats = stats
         }

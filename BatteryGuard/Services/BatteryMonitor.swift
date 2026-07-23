@@ -176,17 +176,17 @@ final class BatteryMonitor: ObservableObject {
             timeRemainingMinutes: powerFlow.timeRemainingMinutes
         )
 
-        // MARK: Accurate Battery Percentage dari raw mAh
-        // CurrentCapacity (mAh saat ini) / AppleRawMaxCapacity (mAh max degraded) = % akurat
-        // Ini sama dengan yang ditampilkan macOS di menu bar
-        let currentCap: Int? = getProperty("CurrentCapacity")
-        let rawMaxCap: Int? = getProperty("AppleRawMaxCapacity")
-
-        if let curr = currentCap, let max = rawMaxCap, max > 0 {
-            let accuratePercent = min(100, (curr * 100) / max)
+        // MARK: Accurate Battery Percentage
+        // CurrentCapacity dari AppleSmartBattery = persentase (0–100)
+        // MaxCapacity = 100 (konfirmasi satuan adalah persen, bukan mAh)
+        // Nilai ini sama persis dengan yang ditampilkan macOS System Information
+        // dan menu bar battery icon.
+        // JANGAN gunakan StateOfCharge dari BatteryData — itu nilai internal gauge
+        // yang bisa berbeda ±3% dari yang ditampilkan macOS ke user.
+        if let currentCap: Int = getProperty("CurrentCapacity") {
+            let clampedPct = min(100, max(0, currentCap))
             DispatchQueue.main.async { [weak self] in
-                // Override percentage dengan nilai yang lebih akurat dari IOKit
-                self?.status.percentage = accuratePercent
+                self?.status.percentage = clampedPct
             }
         }
 

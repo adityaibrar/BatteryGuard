@@ -90,7 +90,7 @@ final class NetworkSpeedMonitor: ObservableObject {
         let stats = NetworkStats(
             downloadBytesPerSec: totalDownload,
             uploadBytesPerSec: totalUpload,
-            primaryInterface: primaryInterface,
+            primaryInterface: friendlyName(primaryInterface),
             timestamp: now
         )
 
@@ -119,36 +119,42 @@ final class NetworkSpeedMonitor: ObservableObject {
             let iface = current.pointee
             let name = String(cString: iface.ifa_name)
 
-            // Filter: hanya proses AF_LINK (link layer), skip loopback
-            let flags = Int32(iface.ifa_flags)
-            let isLoopback = (flags & IFF_LOOPBACK) != 0
-            let isRunning = (flags & IFF_RUNNING) != 0
+            // Filter hanya interface yang relevan (en0=WiFi, en1=Eth, utun=VPN)
+            // SKIP: lo, bridge, vmnet, awdl, llw, p2p, gif, stf, anpi
+            guard shouldMonitorInterface(name) else {
+                ptr = iface.ifa_next
+                continue
+            }
 
-            // Skip loopback (lo0) dan interface yang tidak aktif
-            if !isLoopback && isRunning {
-                let family = iface.ifa_addr?.pointee.sa_family
-                if family == UInt8(AF_LINK) {
-                    // Cast ke if_data untuk dapat byte counter
-                    if let data = iface.ifa_data?.load(as: if_data.self) {
-                        snapshots.append(NetworkInterfaceSnapshot(
-                            name: name,
-                            rxBytes: UInt64(data.ifi_ibytes),
-                            txBytes: UInt64(data.ifi_obytes),
-                            timestamp: Date()
-                        ))
-                    }
-                }
+            // Hanya proses AF_LINK (link layer stats) — ini yang punya byte counter
+            let family = iface.ifa_addr?.pointee.sa_family
+            guard family == UInt8(AF_LINK) else {
+                ptr = iface.ifa_next
+                continue
+            }
+
+            // Interface harus running
+            let flags = Int32(iface.ifa_flags)
+            let isRunning = (flags & IFF_RUNNING) != 0
+            guard isRunning else {
+                ptr = iface.ifa_next
+                continue
+            }
+
+            // Baca byte counter dari if_data struct
+            if let data = iface.ifa_data?.load(as: if_data.self) {
+                snapshots.append(NetworkInterfaceSnapshot(
+                    name: name,
+                    rxBytes: UInt64(data.ifi_ibytes),
+                    txBytes: UInt64(data.ifi_obytes),
+                    timestamp: Date()
+                ))
             }
 
             ptr = iface.ifa_next
         }
 
-        // Deduplicate: jika ada beberapa entry untuk interface yang sama,
-        // gunakan yang pertama (AF_LINK sudah unik per interface)
-        let uniqueNames = Set(snapshots.map { $0.name })
-        return uniqueNames.compactMap { name in
-            snapshots.first { $0.name == name }
-        }
+        return snapshots
     }
 
     // MARK: - Interface Filter Helper
@@ -158,7 +164,7 @@ final class NetworkSpeedMonitor: ObservableObject {
     /// Bridge/VLAN/virtual interfaces di-skip karena biasanya double-count
     private func shouldMonitorInterface(_ name: String) -> Bool {
         let monitored = ["en", "utun", "ipsec", "ppp"]
-        let excluded = ["lo", "bridge", "vmnet", "p2p", "awdl", "llw"]
+        let excluded  = ["lo", "bridge", "vmnet", "p2p", "awdl", "llw", "gif", "stf", "anpi"]
 
         for prefix in excluded {
             if name.hasPrefix(prefix) { return false }
@@ -167,5 +173,17 @@ final class NetworkSpeedMonitor: ObservableObject {
             if name.hasPrefix(prefix) { return true }
         }
         return false
+    }
+
+    /// Konversi nama interface ke nama yang mudah dibaca
+    /// en0 → "WiFi", en1 → "Ethernet", utun0 → "VPN"
+    private func friendlyName(_ name: String) -> String {
+        if name == "—" { return "—" }
+        if name.hasPrefix("en0") { return "WiFi" }
+        if name.hasPrefix("en1") { return "Ethernet" }
+        if name.hasPrefix("en") { return "Network" }
+        if name.hasPrefix("utun") || name.hasPrefix("ipsec") { return "VPN" }
+        if name.hasPrefix("ppp") { return "PPP" }
+        return name
     }
 }
