@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Helper BUKAN sandboxed — butuh akses penuh ke system untuk charge control -->
+    <key>com.apple.security.app-sandbox</key>
+    <false/>
+
+    <!-- Izinkan akses ke IOKit untuk write ke power management -->
+    <!-- Note: IOKit access biasanya diizinkan via entitlement khusus
+         atau cukup dengan run as root yang diberikan SMAppService daemon -->
+
+    <!-- Helper harus signed — minimal ad-hoc untuk development lokal -->
+    <!-- Untuk distribusi: butuh Developer ID Application + Installer certificate -->
+</dict>
+</plist>

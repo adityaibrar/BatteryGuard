@@ -1,0 +1,184 @@
+name: BatteryGuard
+options:
+  bundleIdPrefix: com.ibrardev
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+# Shared settings untuk semua target
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    ONLY_ACTIVE_ARCH: YES
+    ENABLE_HARDENED_RUNTIME: YES
+    # Apple Silicon only
+    ARCHS: arm64
+    VALID_ARCHS: arm64
+
+targets:
+
+  # ─────────────────────────────────────────────
+  # MARK: - Main App Target
+  # ─────────────────────────────────────────────
+  BatteryGuard:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+
+    info:
+      path: BatteryGuard/Resources/Info.plist
+      properties:
+        LSUIElement: true
+        NSPrincipalClass: NSApplication
+        CFBundleDisplayName: BatteryGuard
+        CFBundleIdentifier: com.ibrardev.BatteryGuard
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0.0"
+        CFBundlePackageType: APPL
+        LSMinimumSystemVersion: "13.0"
+        NSHumanReadableCopyright: "Copyright © 2024 IbrarDev. Open Source."
+        SMPrivilegedExecutables:
+          "com.ibrardev.BatteryGuard.Helper": "identifier \"com.ibrardev.BatteryGuard.Helper\" and anchor apple generic"
+
+    entitlements:
+      path: BatteryGuard/Resources/BatteryGuard.entitlements
+      properties:
+        "com.apple.security.app-sandbox": true
+        "com.apple.security.network.client": true
+        "com.apple.security.files.user-selected.read-only": true
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ibrardev.BatteryGuard
+        PRODUCT_NAME: BatteryGuard
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: BatteryGuard/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: BatteryGuard/Resources/BatteryGuard.entitlements
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_APP_SANDBOX: YES
+
+    # Semua source file main app — explicit list untuk avoid duplikasi
+    sources:
+      # Shared protocol (di-include ke kedua target)
+      - path: Shared/BatteryGuardXPCProtocol.swift
+        buildPhase: sources
+      # App entry
+      - path: BatteryGuard/App/BatteryGuardApp.swift
+      - path: BatteryGuard/App/AppDelegate.swift
+      # Menu Bar
+      - path: BatteryGuard/MenuBar/MenuBarView.swift
+      - path: BatteryGuard/MenuBar/StatusBarMetricView.swift
+      # Dashboard root
+      - path: BatteryGuard/Dashboard/DashboardView.swift
+      - path: BatteryGuard/Dashboard/Sidebar/SidebarView.swift
+      # Dashboard Cards
+      - path: BatteryGuard/Dashboard/Cards/DashboardCardView.swift
+      - path: BatteryGuard/Dashboard/Cards/BatterySpecsCard.swift
+      - path: BatteryGuard/Dashboard/Cards/BatteryHealthCard.swift
+      - path: BatteryGuard/Dashboard/Cards/PowerAdapterCard.swift
+      - path: BatteryGuard/Dashboard/Cards/BatteryLevelCard.swift
+      - path: BatteryGuard/Dashboard/Cards/BatteryCyclesCard.swift
+      - path: BatteryGuard/Dashboard/Cards/BatteryTemperatureCard.swift
+      - path: BatteryGuard/Dashboard/Cards/PowerConsumptionCard.swift
+      - path: BatteryGuard/Dashboard/Cards/PowerFlowCard.swift
+      - path: BatteryGuard/Dashboard/Cards/EnergyAppsCard.swift
+      - path: BatteryGuard/Dashboard/Cards/CalibrationCard.swift
+      # Settings
+      - path: BatteryGuard/Settings/SettingsView.swift
+      # Models
+      - path: BatteryGuard/Models/BatteryInfo.swift
+      - path: BatteryGuard/Models/NetworkStats.swift
+      - path: BatteryGuard/Models/RAMStats.swift
+      - path: BatteryGuard/Models/TemperatureReading.swift
+      # Services
+      - path: BatteryGuard/Services/BatteryMonitor.swift
+      - path: BatteryGuard/Services/RAMMonitor.swift
+      - path: BatteryGuard/Services/NetworkSpeedMonitor.swift
+      - path: BatteryGuard/Services/TemperatureMonitor.swift
+      - path: BatteryGuard/Services/ChargeLimitManager.swift
+      - path: BatteryGuard/Services/CycleHistoryStore.swift
+      - path: BatteryGuard/Services/PreferencesStore.swift
+      # XPC client
+      - path: BatteryGuard/XPC/HelperConnection.swift
+      # ViewModel
+      - path: BatteryGuard/ViewModels/SystemStatsViewModel.swift
+
+    # Frameworks
+    dependencies:
+      # ServiceManagement untuk SMAppService
+      - sdk: ServiceManagement.framework
+      # IOKit untuk battery monitoring
+      - sdk: IOKit.framework
+
+    # Copy Helper ke app bundle (LaunchServices)
+    postBuildScripts:
+      - name: Copy Helper to Bundle
+        script: |
+          # Helper akan di-copy ke Contents/Library/LaunchServices
+          # XcodeGen tidak support custom copy phase langsung,
+          # ini dilakukan via Xcode Copy Files phase (manual setelah generate)
+          echo "Note: Add BatteryGuardHelper to Copy Files phase manually in Xcode"
+
+  # ─────────────────────────────────────────────
+  # MARK: - Privileged Helper Target
+  # ─────────────────────────────────────────────
+  BatteryGuardHelper:
+    type: tool
+    platform: macOS
+    deploymentTarget: "13.0"
+
+    info:
+      path: BatteryGuardHelper/Info.plist
+      properties:
+        CFBundleIdentifier: com.ibrardev.BatteryGuard.Helper
+        CFBundleVersion: "1"
+        CFBundleShortVersionString: "1.0.0"
+        SMAuthorizedClients:
+          - "identifier \"com.ibrardev.BatteryGuard\" and anchor apple generic"
+        MachServices:
+          "com.ibrardev.BatteryGuard.Helper": true
+
+    entitlements:
+      path: BatteryGuardHelper/BatteryGuardHelper.entitlements
+      properties:
+        "com.apple.security.app-sandbox": false
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ibrardev.BatteryGuard.Helper
+        PRODUCT_NAME: com.ibrardev.BatteryGuard.Helper
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: BatteryGuardHelper/Info.plist
+        CODE_SIGN_ENTITLEMENTS: BatteryGuardHelper/BatteryGuardHelper.entitlements
+        CODE_SIGN_STYLE: Automatic
+        # Helper harus di-install ke /Library/PrivilegedHelperTools
+        INSTALL_PATH: /Library/PrivilegedHelperTools
+        SKIP_INSTALL: NO
+
+    sources:
+      # Shared protocol
+      - path: Shared/BatteryGuardXPCProtocol.swift
+        buildPhase: sources
+      # Helper implementation
+      - path: BatteryGuardHelper/main.swift
+      - path: BatteryGuardHelper/HelperTool.swift
+
+    dependencies:
+      - sdk: IOKit.framework
+
+schemes:
+  BatteryGuard:
+    build:
+      targets:
+        BatteryGuard: all
+        BatteryGuardHelper: all
+    run:
+      config: Debug
+      executable: BatteryGuard
+    archive:
+      config: Release

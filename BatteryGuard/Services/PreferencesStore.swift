@@ -1,0 +1,90 @@
+// PreferencesStore.swift
+// BatteryGuard — UserDefaults wrapper untuk semua settings aplikasi
+
+import Foundation
+import SwiftUI
+
+// MARK: - PreferencesStore
+
+/// Centralized store untuk semua user preferences
+/// Menggunakan @AppStorage untuk SwiftUI binding langsung
+final class PreferencesStore: ObservableObject {
+
+    static let shared = PreferencesStore()
+
+    // MARK: - Charge Limiter
+
+    /// Batas pengisian yang di-set user (20–100%)
+    @AppStorage("chargeLimit") var chargeLimit: Int = 80
+    /// Apakah fitur charge limiter aktif
+    @AppStorage("isChargeLimitEnabled") var isChargeLimitEnabled: Bool = false
+    /// Apakah discharge mode aktif
+    @AppStorage("isDischargeModeEnabled") var isDischargeModeEnabled: Bool = false
+
+    // MARK: - Notifications
+
+    /// Notifikasi saat limit tercapai
+    @AppStorage("notifyOnLimitReached") var notifyOnLimitReached: Bool = true
+    /// Notifikasi saat baterai di bawah threshold
+    @AppStorage("notifyOnLowBattery") var notifyOnLowBattery: Bool = true
+    /// Threshold baterai rendah (%)
+    @AppStorage("lowBatteryThreshold") var lowBatteryThreshold: Int = 20
+
+    // MARK: - Temperature
+
+    /// Apakah temperature monitoring aktif
+    @AppStorage("temperatureMonitoringEnabled") var temperatureMonitoringEnabled: Bool = false
+    /// Threshold suhu untuk heat protection (°C)
+    @AppStorage("heatProtectionThreshold") var heatProtectionThreshold: Double = 45.0
+    /// Apakah heat protection aktif
+    @AppStorage("isHeatProtectionEnabled") var isHeatProtectionEnabled: Bool = false
+
+    // MARK: - Menu Bar Display
+
+    /// Mode kompak (kurangi info di menu bar)
+    @AppStorage("isCompactMenuBar") var isCompactMenuBar: Bool = false
+    /// Tampilkan network speed di menu bar
+    @AppStorage("showNetworkSpeed") var showNetworkSpeed: Bool = true
+    /// Tampilkan CPU/system temperature di menu bar
+    @AppStorage("showTemperature") var showTemperature: Bool = false
+    /// Tampilkan RAM usage di menu bar
+    @AppStorage("showRAMUsage") var showRAMUsage: Bool = true
+    /// Tampilkan persentase baterai di menu bar
+    @AppStorage("showBatteryPercent") var showBatteryPercent: Bool = true
+
+    // MARK: - Polling Intervals
+
+    /// Interval polling baterai (detik)
+    @AppStorage("batteryPollingInterval") var batteryPollingInterval: Double = 2.0
+    /// Interval polling RAM & network (detik)
+    @AppStorage("systemPollingInterval") var systemPollingInterval: Double = 1.0
+    /// Interval polling temperature (detik)
+    @AppStorage("tempPollingInterval") var tempPollingInterval: Double = 3.0
+
+    // MARK: - Appearance
+
+    /// Tema aplikasi: "system", "light", "dark"
+    @AppStorage("colorScheme") var colorScheme: String = "system"
+
+    // MARK: - Calibration
+
+    /// Timestamp kalibrasi terakhir
+    @AppStorage("lastCalibrationDate") var lastCalibrationDateInterval: Double = 0
+    var lastCalibrationDate: Date? {
+        get {
+            lastCalibrationDateInterval > 0
+                ? Date(timeIntervalSince1970: lastCalibrationDateInterval)
+                : nil
+        }
+        set {
+            lastCalibrationDateInterval = newValue?.timeIntervalSince1970 ?? 0
+        }
+    }
+
+    // MARK: - Helper
+
+    /// Bundle ID helper untuk SMAppService
+    let helperBundleID = "com.ibrardev.BatteryGuard.Helper"
+
+    private init() {}
+}
