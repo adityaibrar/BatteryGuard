@@ -107,21 +107,19 @@ targets:
       # ViewModel
       - path: BatteryGuard/ViewModels/SystemStatsViewModel.swift
 
-    # Frameworks
+    # Helper dependencies & copying
     dependencies:
-      # ServiceManagement untuk SMAppService
+      - target: BatteryGuardHelper
+      # SDK dependencies
       - sdk: ServiceManagement.framework
-      # IOKit untuk battery monitoring
       - sdk: IOKit.framework
 
-    # Copy Helper ke app bundle (LaunchServices)
     postBuildScripts:
-      - name: Copy Helper to Bundle
+      - name: Copy Helper & Plist to Bundle
         script: |
-          # Helper akan di-copy ke Contents/Library/LaunchServices
-          # XcodeGen tidak support custom copy phase langsung,
-          # ini dilakukan via Xcode Copy Files phase (manual setelah generate)
-          echo "Note: Add BatteryGuardHelper to Copy Files phase manually in Xcode"
+          mkdir -p "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons"
+          cp "${SRCROOT}/BatteryGuard/Resources/com.ibrardev.BatteryGuard.Helper.plist" "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/"
+          cp "${CONFIGURATION_BUILD_DIR}/com.ibrardev.BatteryGuard.Helper" "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/MacOS/"
 
   # ─────────────────────────────────────────────
   # MARK: - Privileged Helper Target

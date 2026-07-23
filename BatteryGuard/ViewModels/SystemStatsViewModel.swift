@@ -108,6 +108,7 @@ final class SystemStatsViewModel: ObservableObject {
         self.cycleHistory = cycleHistory
 
         setupBindings()
+        startAll() // Start monitors automatically on app launch
     }
 
     // MARK: - Start All Monitors

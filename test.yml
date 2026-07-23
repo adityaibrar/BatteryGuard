@@ -1,0 +1,16 @@
+name: Test
+targets:
+  App:
+    type: application
+    platform: macOS
+    copyFiles:
+      - destination: executables
+        targets:
+          - Helper
+      - destination: wrapper
+        subpath: Contents/Library/LaunchDaemons
+        files:
+          - test.plist
+  Helper:
+    type: tool
+    platform: macOS

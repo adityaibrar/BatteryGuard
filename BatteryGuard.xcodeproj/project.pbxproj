@@ -21,6 +21,7 @@
 		7EFFD61CCCE8C69BD6EA248E /* DashboardCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30BE0FB3D2D1BC98AED1CA1 /* DashboardCardView.swift */; };
 		856FFED802BB9D58C571EFD8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE912535073912B41FC0B0C /* AppDelegate.swift */; };
 		858416BCE096577CCF84DD1C /* ChargeLimitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B9989DF0A2DDA8C6C692A94 /* ChargeLimitManager.swift */; };
+		8CC61B294DC1F8EFC9EAF6B8 /* BatteryGuardHelper in Resources */ = {isa = PBXBuildFile; fileRef = 2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8FD349EE18815F6EC19C1543 /* BatteryGuardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7098A58372EF241EB86B662C /* BatteryGuardApp.swift */; };
 		917A42193FFA64A86F351ED9 /* BatteryCyclesCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDD43B78B546DAF59498F6A /* BatteryCyclesCard.swift */; };
 		9CCA169408310DED21D2587F /* BatteryLevelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36421B0C90B6F0B98B069E /* BatteryLevelCard.swift */; };
@@ -46,6 +47,16 @@
 		FDC59E26D24C6705A2F2B3BB /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B63139E80C48CF657E75E26D /* ServiceManagement.framework */; };
 		FE20B01266C5A26E052CFE0F /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF655570A06C454A77F1F41 /* PreferencesStore.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9837387D52A520BFAB9DFD97 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 60955539383B0839CB25888F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8380AFA61DF2F55FE252B646;
+			remoteInfo = BatteryGuardHelper;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0AE35B77928C4BA1B2EA65EC /* BatteryHealthCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryHealthCard.swift; sourceTree = "<group>"; };
@@ -281,12 +292,14 @@
 			buildConfigurationList = A490CAD2489083969BE10FAF /* Build configuration list for PBXNativeTarget "BatteryGuard" */;
 			buildPhases = (
 				9C1AD63C1BD5B9063E34CA8D /* Sources */,
+				062031DBC12180718CCDE845 /* Resources */,
 				66E4420C1807AD8402E7CC5D /* Frameworks */,
-				3CBFAA0625428F1B0C6FAE6B /* Copy Helper to Bundle */,
+				5527F43CFF2D7913000F4A84 /* Copy Helper & Plist to Bundle */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				226A642FA1ABAF6D0F3F2360 /* PBXTargetDependency */,
 			);
 			name = BatteryGuard;
 			packageProductDependencies = (
@@ -350,8 +363,19 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		062031DBC12180718CCDE845 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8CC61B294DC1F8EFC9EAF6B8 /* BatteryGuardHelper in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
-		3CBFAA0625428F1B0C6FAE6B /* Copy Helper to Bundle */ = {
+		5527F43CFF2D7913000F4A84 /* Copy Helper & Plist to Bundle */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -360,14 +384,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Copy Helper to Bundle";
+			name = "Copy Helper & Plist to Bundle";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Helper akan di-copy ke Contents/Library/LaunchServices\n# XcodeGen tidak support custom copy phase langsung,\n# ini dilakukan via Xcode Copy Files phase (manual setelah generate)\necho \"Note: Add BatteryGuardHelper to Copy Files phase manually in Xcode\"\n";
+			shellScript = "mkdir -p \"${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons\"\ncp \"${SRCROOT}/BatteryGuard/Resources/com.ibrardev.BatteryGuard.Helper.plist\" \"${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/\"\ncp \"${CONFIGURATION_BUILD_DIR}/com.ibrardev.BatteryGuard.Helper\" \"${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/MacOS/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -422,6 +446,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		226A642FA1ABAF6D0F3F2360 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8380AFA61DF2F55FE252B646 /* BatteryGuardHelper */;
+			targetProxy = 9837387D52A520BFAB9DFD97 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		04DBE0D539F62797F66B504E /* Debug */ = {
