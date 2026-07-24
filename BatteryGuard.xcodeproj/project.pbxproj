@@ -23,7 +23,7 @@
 		7EFFD61CCCE8C69BD6EA248E /* DashboardCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30BE0FB3D2D1BC98AED1CA1 /* DashboardCardView.swift */; };
 		856FFED802BB9D58C571EFD8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE912535073912B41FC0B0C /* AppDelegate.swift */; };
 		858416BCE096577CCF84DD1C /* ChargeLimitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B9989DF0A2DDA8C6C692A94 /* ChargeLimitManager.swift */; };
-		8CC61B294DC1F8EFC9EAF6B8 /* BatteryGuardHelper in Resources */ = {isa = PBXBuildFile; fileRef = 2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8CC61B294DC1F8EFC9EAF6B8 /* com.ibrardev.BatteryGuard.Helper in Resources */ = {isa = PBXBuildFile; fileRef = 2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8FD349EE18815F6EC19C1543 /* BatteryGuardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7098A58372EF241EB86B662C /* BatteryGuardApp.swift */; };
 		917A42193FFA64A86F351ED9 /* BatteryCyclesCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDD43B78B546DAF59498F6A /* BatteryCyclesCard.swift */; };
 		9CCA169408310DED21D2587F /* BatteryLevelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36421B0C90B6F0B98B069E /* BatteryLevelCard.swift */; };
@@ -67,7 +67,7 @@
 		20B119B61AB05B713149EAB3 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		265F9DAC4B03C087C61FCF65 /* SystemStatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatsViewModel.swift; sourceTree = "<group>"; };
 		2C214E70176FE5C61975B18F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */ = {isa = PBXFileReference; includeInIndex = 0; path = BatteryGuardHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.ibrardev.BatteryGuard.Helper; sourceTree = BUILT_PRODUCTS_DIR; };
 		40EB67ED7AC5D0EF78AEBE5B /* NetworkSpeedMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSpeedMonitor.swift; sourceTree = "<group>"; };
 		432BE2A6008F2F6397A2C6D1 /* LevelHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelHistoryStore.swift; sourceTree = "<group>"; };
 		44CF3CCD0803E8498AA26646 /* BatteryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryMonitor.swift; sourceTree = "<group>"; };
@@ -138,7 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				C2DE2C9237583B062101A1DC /* BatteryGuard.app */,
-				2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */,
+				2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -332,7 +332,7 @@
 			packageProductDependencies = (
 			);
 			productName = BatteryGuardHelper;
-			productReference = 2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */;
+			productReference = 2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -377,7 +377,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CC61B294DC1F8EFC9EAF6B8 /* BatteryGuardHelper in Resources */,
+				8CC61B294DC1F8EFC9EAF6B8 /* com.ibrardev.BatteryGuard.Helper in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -471,6 +471,7 @@
 		04DBE0D539F62797F66B504E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BatteryGuard/Resources/BatteryGuard.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -493,6 +494,7 @@
 		0711A35365E072684C6B98F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BatteryGuard/Resources/BatteryGuard.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -515,6 +517,7 @@
 		4A266231880F590982205C5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_ENTITLEMENTS = BatteryGuardHelper/BatteryGuardHelper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -537,13 +540,14 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibrardev.BatteryGuard.Helper;
 				PRODUCT_NAME = com.ibrardev.BatteryGuard.Helper;
 				SDKROOT = macosx;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
 		676A6FBA7808EE516FB83006 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_ENTITLEMENTS = BatteryGuardHelper/BatteryGuardHelper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -566,7 +570,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibrardev.BatteryGuard.Helper;
 				PRODUCT_NAME = com.ibrardev.BatteryGuard.Helper;
 				SDKROOT = macosx;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};

@@ -31,7 +31,7 @@
 	<key>SMPrivilegedExecutables</key>
 	<dict>
 		<key>com.ibrardev.BatteryGuard.Helper</key>
-		<string>identifier "com.ibrardev.BatteryGuard.Helper" and anchor apple generic</string>
+		<string>identifier "com.ibrardev.BatteryGuard.Helper"</string>
 	</dict>
 </dict>
 </plist>

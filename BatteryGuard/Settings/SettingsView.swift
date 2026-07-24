@@ -53,7 +53,7 @@ private struct GeneralSettingsTab: View {
                 HStack {
                     Text("Default Limit")
                     Spacer()
-                    Stepper("\(prefs.chargeLimit)%", value: $prefs.chargeLimit, in: 20...100, step: 5)
+                    Stepper("\(prefs.chargeLimit)%", value: $prefs.chargeLimit, in: 20...100, step: 1)
                 }
             }
 
@@ -63,7 +63,7 @@ private struct GeneralSettingsTab: View {
                 HStack {
                     Text("Low Battery Threshold")
                     Spacer()
-                    Stepper("\(prefs.lowBatteryThreshold)%", value: $prefs.lowBatteryThreshold, in: 5...30, step: 5)
+                    Stepper("\(prefs.lowBatteryThreshold)%", value: $prefs.lowBatteryThreshold, in: 5...30, step: 1)
                 }
             }
 

@@ -23,7 +23,7 @@
 	</dict>
 	<key>SMAuthorizedClients</key>
 	<array>
-		<string>identifier "com.ibrardev.BatteryGuard" and anchor apple generic</string>
+		<string>identifier "com.ibrardev.BatteryGuard"</string>
 	</array>
 </dict>
 </plist>

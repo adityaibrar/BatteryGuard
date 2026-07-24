@@ -13,6 +13,9 @@ struct MenuBarView: View {
     @EnvironmentObject var helperInstaller: HelperInstaller
     @Environment(\.openWindow) private var openWindow
 
+    /// Nilai sementara slider — bebas per-1%, XPC hanya dipanggil saat drag selesai (onEditingChanged)
+    @State private var tempLimit: Double = 80
+
     var body: some View {
         VStack(spacing: 0) {
             // MARK: Header — Metrics Strip
@@ -52,7 +55,15 @@ struct MenuBarView: View {
         }
         .frame(width: 300)
         .background(.regularMaterial)
-    }
+        .onAppear {
+            // Sync tempLimit saat popover dibuka
+            tempLimit = Double(viewModel.chargeLimitState.limitPercent)
+        }
+        .onChange(of: viewModel.chargeLimitState.limitPercent) { newVal in
+            // Sync jika limit berubah dari luar (misal Settings)
+            tempLimit = Double(newVal)
+        }
+    } // end body
 
     // MARK: - Metrics Strip
 
@@ -174,29 +185,43 @@ struct MenuBarView: View {
             }
 
             // Slider
-            if viewModel.chargeLimitState.isEnabled || true {
-                VStack(spacing: 4) {
+            if viewModel.chargeLimitState.isEnabled {
+                VStack(spacing: 6) {
                     HStack {
                         Text("Limit")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Spacer()
-                        Text("\(viewModel.chargeLimitState.limitPercent)%")
+                        Text("\(Int(tempLimit))%")
                             .font(.system(.caption, design: .monospaced))
                             .fontWeight(.semibold)
                             .foregroundStyle(viewModel.chargeLimitState.isEnabled ? .primary : .secondary)
+                            .contentTransition(.numericText())
                     }
 
                     Slider(
-                        value: Binding(
-                            get: { Double(viewModel.chargeLimitState.limitPercent) },
-                            set: { viewModel.setChargeLimit(Int($0)) }
-                        ),
-                        in: 20...100,
-                        step: 5
-                    )
+                        value: $tempLimit,
+                        in: 20...100
+                    ) { _ in
+                        viewModel.setChargeLimit(Int(tempLimit))
+                    }
                     .disabled(!viewModel.chargeLimitState.isEnabled)
                     .tint(sliderColor)
+
+                    // Range hint
+                    HStack {
+                        Text("20%")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.tertiary)
+                        Spacer()
+                        Text("Recommended: 80%")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.tertiary)
+                        Spacer()
+                        Text("100%")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.tertiary)
+                    }
                 }
             }
 
@@ -273,7 +298,7 @@ struct MenuBarView: View {
     }
 
     private var sliderColor: Color {
-        switch viewModel.chargeLimitState.limitPercent {
+        switch Int(tempLimit) {
         case 80...: return .green
         case 60..<80: return .yellow
         default: return .orange

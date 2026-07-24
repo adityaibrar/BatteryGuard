@@ -78,24 +78,63 @@ final class HelperInstaller: ObservableObject {
         }
     }
 
-    /// Coba install via SMAppService (hanya works untuk signed build dengan Developer cert)
-    /// Untuk dev build: user harus jalankan install_helper.sh
     func install() {
-        let service = SMAppService.daemon(plistName: "com.ibrardev.BatteryGuard.Helper.plist")
-        do {
-            try service.register()
-            NSLog("[HelperInstaller] SMAppService register success")
-            DispatchQueue.main.async { self.installStatus = .running }
-        } catch {
-            NSLog("[HelperInstaller] SMAppService failed (expected for unsigned build): \(error)")
-            // Tampilkan instruksi install manual
-            DispatchQueue.main.async {
-                self.lastError = NSError(
-                    domain: "HelperInstaller",
-                    code: 1,
-                    userInfo: [NSLocalizedDescriptionKey:
-                        "Untuk mengaktifkan helper, jalankan perintah berikut di Terminal:\n\nsudo bash \"/Users/IbrarDev/Development/Projects/macos/BatteryGuard/install_helper.sh\""]
-                )
+        // Karena aplikasi di-build secara ad-hoc (tanpa sertifikat Developer Apple berbayar),
+        // SMAppService seringkali "berhasil" namun daemon gagal berjalan karena masalah signature.
+        // Oleh karena itu, kita langsung memanggil AppleScript agar selalu memunculkan prompt Touch ID/Password
+        // dan meng-copy helper ke /Library/PrivilegedHelperTools dengan benar.
+        NSLog("[HelperInstaller] Memulai instalasi helper via AppleScript...")
+        installViaAppleScript()
+    }
+
+    private func installViaAppleScript() {
+        guard let appURL = Bundle.main.bundleURL as URL? else { return }
+        let appPath = appURL.path
+        let helperBinary = "\(appPath)/Contents/MacOS/com.ibrardev.BatteryGuard.Helper"
+        let plistSrc = "\(appPath)/Contents/Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist"
+        let helperDest = "/Library/PrivilegedHelperTools/com.ibrardev.BatteryGuard.Helper"
+        let plistDest = "/Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist"
+        
+        let cmds = [
+            "mkdir -p /Library/PrivilegedHelperTools",
+            "cp \"\(helperBinary)\" \"\(helperDest)\"",
+            "chmod 755 \"\(helperDest)\"",
+            "chown root:wheel \"\(helperDest)\"",
+            "cp \"\(plistSrc)\" \"\(plistDest)\"",
+            "/usr/libexec/PlistBuddy -c \"Delete :BundleProgram\" \"\(plistDest)\" 2>/dev/null || true",
+            "/usr/libexec/PlistBuddy -c \"Add :Program string \(helperDest)\" \"\(plistDest)\"",
+            "/usr/libexec/PlistBuddy -c \"Delete :KeepAlive\" \"\(plistDest)\" 2>/dev/null || true",
+            "/usr/libexec/PlistBuddy -c \"Add :KeepAlive bool true\" \"\(plistDest)\"",
+            "chmod 644 \"\(plistDest)\"",
+            "chown root:wheel \"\(plistDest)\"",
+            "launchctl bootout system \"\(plistDest)\" 2>/dev/null || true",
+            "sleep 1",
+            "launchctl bootstrap system \"\(plistDest)\""
+        ]
+        
+        let script = cmds.joined(separator: " ; ")
+        let escapedScript = script.replacingOccurrences(of: "\"", with: "\\\"")
+        let appleScript = "do shell script \"\(escapedScript)\" with administrator privileges"
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            var err: NSDictionary?
+            if let scriptObject = NSAppleScript(source: appleScript) {
+                scriptObject.executeAndReturnError(&err)
+                if let error = err {
+                    NSLog("[HelperInstaller] AppleScript failed: \(error)")
+                    DispatchQueue.main.async {
+                        self.lastError = NSError(
+                            domain: "HelperInstaller",
+                            code: 2,
+                            userInfo: [NSLocalizedDescriptionKey: "Gagal menginstal helper. Pastikan Anda memberikan izin (Password/Touch ID)."]
+                        )
+                    }
+                } else {
+                    NSLog("[HelperInstaller] AppleScript success")
+                    DispatchQueue.main.async {
+                        self.installStatus = .running
+                    }
+                }
             }
         }
     }

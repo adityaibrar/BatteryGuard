@@ -28,6 +28,14 @@ struct DashboardView: View {
         .onAppear {
             viewModel.startAll()
             helperInstaller.checkStatus()
+            
+            // Auto prompt install on first launch
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                if !helperInstaller.isInstalled && !UserDefaults.standard.bool(forKey: "HasPromptedInstall") {
+                    UserDefaults.standard.set(true, forKey: "HasPromptedInstall")
+                    helperInstaller.install()
+                }
+            }
         }
         .onDisappear {
             // Jangan stop monitors saat dashboard ditutup — tetap jalan di background
@@ -201,9 +209,6 @@ struct DashboardView: View {
 
 struct HelperInstallBanner: View {
     @EnvironmentObject var helperInstaller: HelperInstaller
-    @State private var showCopied = false
-
-    private let installCommand = "sudo bash \"/Users/IbrarDev/Development/Projects/macos/BatteryGuard/install_helper.sh\""
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -213,9 +218,9 @@ struct HelperInstallBanner: View {
                     .foregroundStyle(.orange)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Helper Belum Aktif")
+                    Text("Helper Belum Terinstall")
                         .fontWeight(.semibold)
-                    Text("Charge limiting memerlukan BatteryGuard Helper (daemon) yang berjalan sebagai root.")
+                    Text("Fitur pembatasan baterai memerlukan komponen tambahan (Helper) agar bisa mengontrol daya masuk.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -223,53 +228,22 @@ struct HelperInstallBanner: View {
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Cara Install (sekali saja):")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
-
-                HStack(spacing: 8) {
-                    Text(installCommand)
-                        .font(.system(.caption, design: .monospaced))
-                        .padding(8)
-                        .background(.black.opacity(0.15))
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                        .lineLimit(1)
-                        .truncationMode(.middle)
-
-                    Button {
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(installCommand, forType: .string)
-                        showCopied = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            showCopied = false
-                        }
-                    } label: {
-                        Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
-                            .font(.caption)
-                    }
-                    .buttonStyle(.borderless)
-                    .tint(showCopied ? .green : .secondary)
-                }
-
-                Text("1. Salin perintah di atas\n2. Buka Terminal (Cmd+Space → ketik Terminal)\n3. Paste dan tekan Enter\n4. Masukkan password Mac Anda\n5. Setelah selesai, klik tombol Refresh di bawah")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            Text("Klik tombol di bawah ini untuk menginstall. Anda akan diminta memasukkan Password atau Touch ID Mac Anda.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             HStack {
-                Button("Buka Terminal") {
-                    NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/Utilities/Terminal.app"))
-                }
-                .buttonStyle(.bordered)
-
-                Button("Refresh Status") {
-                    helperInstaller.checkStatus()
+                Button("Install Helper Sekarang") {
+                    helperInstaller.install()
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.orange)
+                
+                if helperInstaller.installStatus == .checking {
+                    ProgressView()
+                        .controlSize(.small)
+                }
             }
         }
         .padding(14)

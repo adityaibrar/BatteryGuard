@@ -41,7 +41,7 @@ targets:
         LSMinimumSystemVersion: "13.0"
         NSHumanReadableCopyright: "Copyright © 2024 IbrarDev. Open Source."
         SMPrivilegedExecutables:
-          "com.ibrardev.BatteryGuard.Helper": "identifier \"com.ibrardev.BatteryGuard.Helper\" and anchor apple generic"
+          "com.ibrardev.BatteryGuard.Helper": "identifier \"com.ibrardev.BatteryGuard.Helper\""
 
     entitlements:
       path: BatteryGuard/Resources/BatteryGuard.entitlements
@@ -139,7 +139,7 @@ targets:
         CFBundleVersion: "1"
         CFBundleShortVersionString: "1.0.0"
         SMAuthorizedClients:
-          - "identifier \"com.ibrardev.BatteryGuard\" and anchor apple generic"
+          - "identifier \"com.ibrardev.BatteryGuard\""
         MachServices:
           "com.ibrardev.BatteryGuard.Helper": true
 
@@ -161,7 +161,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
         # Helper harus di-install ke /Library/PrivilegedHelperTools
         INSTALL_PATH: /Library/PrivilegedHelperTools
-        SKIP_INSTALL: NO
+        SKIP_INSTALL: YES
 
     sources:
       # Shared protocol

@@ -1,5 +1,10 @@
 // BatteryTemperatureCard.swift
 // Card 6: Suhu baterai dari IOKit AppleSmartBattery
+//
+// Akurasi:
+// ✅ Battery temp: IOKit AppleSmartBattery.Temperature ÷ 100 → Celsius akurat
+// ℹ️  CPU temp: Tidak tersedia tanpa root di Apple Silicon (M-series)
+//     AppleARMPMUTempSensor memerlukan private IOHIDEvent entitlement
 
 import SwiftUI
 
@@ -13,7 +18,8 @@ struct BatteryTemperatureCard: View {
     var body: some View {
         DashboardCardView(title: "Battery Temperature", icon: "thermometer.medium", accentColor: tempColor) {
             VStack(alignment: .leading, spacing: 12) {
-                // Current temperature
+
+                // MARK: Current temperature — large display
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(batteryTemp.map { String(format: "%.1f", $0.celsius) } ?? "--")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
@@ -25,44 +31,64 @@ struct BatteryTemperatureCard: View {
                     Spacer()
 
                     if let temp = batteryTemp {
-                        VStack(alignment: .trailing) {
+                        VStack(alignment: .trailing, spacing: 2) {
                             Text(String(format: "%.1f°F", temp.fahrenheit))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             Text(tempLabel)
                                 .font(.caption)
+                                .fontWeight(.medium)
                                 .foregroundStyle(tempColor)
                         }
                     }
                 }
 
-                // Temperature gauge
+                // MARK: Temperature gauge
                 if let temp = batteryTemp {
                     TemperatureGaugeView(celsius: temp.celsius, range: 20...60)
                 }
 
-                // CPU temperature (jika tersedia)
-                if let cpuTemp = viewModel.temperatures.cpuTemperature {
-                    Divider()
+                Divider()
+
+                // MARK: Info rows
+                VStack(spacing: 6) {
                     CardInfoRow(
-                        label: "CPU Temperature",
-                        value: cpuTemp.formattedCelsius,
-                        valueColor: cpuTempColor(cpuTemp.celsius)
+                        label: "Source",
+                        value: "AppleSmartBattery (IOKit)",
+                        valueColor: .secondary
                     )
-                } else {
-                    Divider()
-                    HStack {
-                        Image(systemName: "info.circle")
-                            .font(.caption2)
+
+                    // Status kesehatan suhu
+                    if let celsius = batteryTemp?.celsius {
+                        CardInfoRow(
+                            label: "Battery Thermal",
+                            value: thermalStatus(celsius),
+                            valueColor: tempColor
+                        )
+                    }
+
+                    // CPU temp — jujur tentang keterbatasan
+                    HStack(alignment: .top) {
+                        Text("CPU Temperature")
+                            .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text("CPU temp requires monitoring enabled in Settings")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .frame(minWidth: 120, alignment: .leading)
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Image(systemName: "lock.fill")
+                                .font(.system(size: 8))
+                                .foregroundStyle(.secondary.opacity(0.6))
+                            Text("Requires root (Apple Silicon)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary.opacity(0.7))
+                        }
                     }
                 }
             }
         }
     }
+
+    // MARK: - Helpers
 
     private var tempColor: Color {
         guard let celsius = batteryTemp?.celsius else { return .secondary }
@@ -84,11 +110,12 @@ struct BatteryTemperatureCard: View {
         }
     }
 
-    private func cpuTempColor(_ celsius: Double) -> Color {
+    private func thermalStatus(_ celsius: Double) -> String {
         switch celsius {
-        case ..<60: return .green
-        case 60..<80: return .orange
-        default: return .red
+        case ..<35: return "Optimal"
+        case 35..<45: return "Normal"
+        case 45..<55: return "Warm — monitor usage"
+        default: return "Hot — reduce load"
         }
     }
 }
@@ -100,13 +127,13 @@ struct TemperatureGaugeView: View {
     let range: ClosedRange<Double>
 
     private var normalized: Double {
-        (celsius - range.lowerBound) / (range.upperBound - range.lowerBound)
+        min(1.0, max(0.0, (celsius - range.lowerBound) / (range.upperBound - range.lowerBound)))
     }
 
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                // Track
+                // Track gradient
                 RoundedRectangle(cornerRadius: 3)
                     .fill(
                         LinearGradient(
@@ -118,15 +145,27 @@ struct TemperatureGaugeView: View {
                     .opacity(0.3)
                     .frame(height: 6)
 
-                // Indicator
+                // Current position indicator
                 RoundedRectangle(cornerRadius: 3)
                     .fill(Color.white)
                     .frame(width: 3, height: 14)
                     .offset(x: max(0, min(geo.size.width - 3, geo.size.width * normalized)))
                     .shadow(radius: 2)
                     .animation(.easeInOut, value: celsius)
+
+                // Range labels overlay
+                HStack {
+                    Text("20°")
+                        .font(.system(size: 8))
+                        .foregroundStyle(.secondary.opacity(0.6))
+                    Spacer()
+                    Text("60°")
+                        .font(.system(size: 8))
+                        .foregroundStyle(.secondary.opacity(0.6))
+                }
+                .offset(y: 10)
             }
         }
-        .frame(height: 14)
+        .frame(height: 24)
     }
 }
