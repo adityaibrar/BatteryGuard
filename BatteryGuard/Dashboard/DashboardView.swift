@@ -200,30 +200,78 @@ struct DashboardView: View {
 
 struct HelperInstallBanner: View {
     @EnvironmentObject var helperInstaller: HelperInstaller
+    @State private var showCopied = false
+
+    private let installCommand = "sudo bash \"/Users/IbrarDev/Development/Projects/macos/BatteryGuard/install_helper.sh\""
 
     var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "exclamationmark.shield")
-                .font(.title2)
-                .foregroundStyle(.orange)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.shield.fill")
+                    .font(.title2)
+                    .foregroundStyle(.orange)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Helper Tool Required")
-                    .fontWeight(.semibold)
-                Text("Charge limiting requires the BatteryGuard Helper to be installed.")
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Helper Belum Aktif")
+                        .fontWeight(.semibold)
+                    Text("Charge limiting memerlukan BatteryGuard Helper (daemon) yang berjalan sebagai root.")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Cara Install (sekali saja):")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
+
+                HStack(spacing: 8) {
+                    Text(installCommand)
+                        .font(.system(.caption, design: .monospaced))
+                        .padding(8)
+                        .background(.black.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                        .lineLimit(1)
+                        .truncationMode(.middle)
+
+                    Button {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(installCommand, forType: .string)
+                        showCopied = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            showCopied = false
+                        }
+                    } label: {
+                        Image(systemName: showCopied ? "checkmark" : "doc.on.doc")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.borderless)
+                    .tint(showCopied ? .green : .secondary)
+                }
+
+                Text("1. Salin perintah di atas\n2. Buka Terminal (Cmd+Space → ketik Terminal)\n3. Paste dan tekan Enter\n4. Masukkan password Mac Anda\n5. Setelah selesai, klik tombol Refresh di bawah")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
-            Spacer()
+            HStack {
+                Button("Buka Terminal") {
+                    NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/Utilities/Terminal.app"))
+                }
+                .buttonStyle(.bordered)
 
-            Button("Install Helper") {
-                helperInstaller.install()
+                Button("Refresh Status") {
+                    helperInstaller.checkStatus()
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.orange)
             }
-            .buttonStyle(.bordered)
-            .tint(.orange)
         }
-        .padding(12)
+        .padding(14)
         .background(.orange.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(
@@ -233,3 +281,4 @@ struct HelperInstallBanner: View {
         .padding(.horizontal, 20)
     }
 }
+

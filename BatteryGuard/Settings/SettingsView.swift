@@ -200,19 +200,18 @@ private struct HelperSettingsTab: View {
 
     private var statusText: String {
         switch helperInstaller.installStatus {
-        case .enabled: return "Installed & Running"
-        case .requiresApproval: return "Requires Approval"
-        case .notRegistered: return "Not Installed"
-        case .notFound: return "Not Found"
-        @unknown default: return "Unknown"
+        case .checking: return "Memeriksa..."
+        case .running: return "Aktif & Berjalan"
+        case .enabled: return "Aktif & Berjalan"
+        case .notRunning: return "Belum Terinstall"
         }
     }
 
     private var statusColor: Color {
         switch helperInstaller.installStatus {
-        case .enabled: return .green
-        case .requiresApproval: return .orange
-        default: return .secondary
+        case .running, .enabled: return .green
+        case .checking: return .secondary
+        case .notRunning: return .red
         }
     }
 }

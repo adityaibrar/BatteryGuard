@@ -29,43 +29,92 @@ enum HelperConnectionError: LocalizedError {
 
 // MARK: - Helper Installer
 
-/// Mengelola instalasi Privileged Helper via SMAppService (macOS 13+)
+/// Mengelola status instalasi BatteryGuard Helper daemon.
+///
+/// Untuk dev build (ad-hoc signed), instalasi helper dilakukan via script:
+///   sudo bash install_helper.sh
+///
+/// isInstalled dicek langsung via launchctl, bukan SMAppService
+/// karena SMAppService membutuhkan sertifikat Apple Developer berbayar.
 final class HelperInstaller: ObservableObject {
 
-    @Published var installStatus: SMAppService.Status = .notRegistered
+    @Published var installStatus: HelperInstallStatus = .checking
     @Published var lastError: Error?
 
-    private let service = SMAppService.daemon(plistName: "com.ibrardev.BatteryGuard.Helper.plist")
+    enum HelperInstallStatus {
+        case checking
+        case running       // launchctl: daemon aktif
+        case notRunning    // launchctl: daemon tidak aktif / belum install
+        case enabled       // SMAppService: registered (untuk signed build)
 
-    func checkStatus() {
-        installStatus = service.status
-    }
-
-    func install() {
-        do {
-            try service.register()
-            installStatus = service.status
-        } catch {
-            lastError = error
-            installStatus = service.status
+        var isRunning: Bool {
+            self == .running || self == .enabled
         }
     }
 
-    func uninstall() {
-        Task {
-            do {
-                try await service.unregister()
-                await MainActor.run { installStatus = service.status }
-            } catch {
-                await MainActor.run { lastError = error }
+    // Cek apakah daemon berjalan via launchctl print
+    func checkStatus() {
+        DispatchQueue.global(qos: .utility).async {
+            let running = self.isDaemonRunning()
+            DispatchQueue.main.async {
+                self.installStatus = running ? .running : .notRunning
             }
         }
     }
 
+    private func isDaemonRunning() -> Bool {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/bin/launchctl")
+        task.arguments = ["print", "system/com.ibrardev.BatteryGuard.Helper"]
+        let pipe = Pipe()
+        task.standardOutput = pipe
+        task.standardError = pipe
+        do {
+            try task.run()
+            task.waitUntilExit()
+            return task.terminationStatus == 0
+        } catch {
+            return false
+        }
+    }
+
+    /// Coba install via SMAppService (hanya works untuk signed build dengan Developer cert)
+    /// Untuk dev build: user harus jalankan install_helper.sh
+    func install() {
+        let service = SMAppService.daemon(plistName: "com.ibrardev.BatteryGuard.Helper.plist")
+        do {
+            try service.register()
+            NSLog("[HelperInstaller] SMAppService register success")
+            DispatchQueue.main.async { self.installStatus = .running }
+        } catch {
+            NSLog("[HelperInstaller] SMAppService failed (expected for unsigned build): \(error)")
+            // Tampilkan instruksi install manual
+            DispatchQueue.main.async {
+                self.lastError = NSError(
+                    domain: "HelperInstaller",
+                    code: 1,
+                    userInfo: [NSLocalizedDescriptionKey:
+                        "Untuk mengaktifkan helper, jalankan perintah berikut di Terminal:\n\nsudo bash \"/Users/IbrarDev/Development/Projects/macos/BatteryGuard/install_helper.sh\""]
+                )
+            }
+        }
+    }
+
+    func uninstall() {
+        let script = "launchctl bootout system/com.ibrardev.BatteryGuard.Helper && rm -f /Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist && rm -f /Library/PrivilegedHelperTools/com.ibrardev.BatteryGuard.Helper"
+        let appleScript = """
+        do shell script "\(script)" with administrator privileges
+        """
+        var err: NSDictionary?
+        NSAppleScript(source: appleScript)?.executeAndReturnError(&err)
+        DispatchQueue.main.async { self.installStatus = .notRunning }
+    }
+
     var isInstalled: Bool {
-        installStatus == .enabled
+        installStatus.isRunning
     }
 }
+
 
 // MARK: - XPC Connection Manager
 

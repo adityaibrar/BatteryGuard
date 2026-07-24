@@ -30,6 +30,7 @@
 		AA341E44B1AD293F91600D7B /* BatteryGuardXPCProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F46CCC0C2677862C1064594 /* BatteryGuardXPCProtocol.swift */; };
 		ABEA578784BC3979768522A5 /* PowerConsumptionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785EF998C528D7BBD21E7453 /* PowerConsumptionCard.swift */; };
 		AC108C7AB36CE3FA447D3184 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2D2B51A5487AAA5BB185BCB /* IOKit.framework */; };
+		AFDB779914FFD7765818DC0A /* SMCController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D266532F6AD7F1DF19E52DDA /* SMCController.swift */; };
 		BA442BBDF7E26B8B013C905D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB52B3F31DE6684885E05853 /* main.swift */; };
 		BAD64BA8FF87E0B1620970CA /* StatusBarMetricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6124207C4284B40960D1A812 /* StatusBarMetricView.swift */; };
 		BC77A53D8EDB81BC83E359EA /* RAMStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65E6D74883F57330A857F6CC /* RAMStats.swift */; };
@@ -91,6 +92,7 @@
 		C2DE2C9237583B062101A1DC /* BatteryGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA6A84E99778A9D8E275ACE3 /* TemperatureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureMonitor.swift; sourceTree = "<group>"; };
 		CFF655570A06C454A77F1F41 /* PreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStore.swift; sourceTree = "<group>"; };
+		D266532F6AD7F1DF19E52DDA /* SMCController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMCController.swift; sourceTree = "<group>"; };
 		D30BE0FB3D2D1BC98AED1CA1 /* DashboardCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardCardView.swift; sourceTree = "<group>"; };
 		E45A0777C608095F95CB63EF /* HelperConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperConnection.swift; sourceTree = "<group>"; };
 		E75E09FC58B2E643D2523750 /* PowerFlowCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerFlowCard.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 			children = (
 				BB9AA867DF6A5376B248108B /* HelperTool.swift */,
 				FB52B3F31DE6684885E05853 /* main.swift */,
+				D266532F6AD7F1DF19E52DDA /* SMCController.swift */,
 			);
 			path = BatteryGuardHelper;
 			sourceTree = "<group>";
@@ -402,6 +405,7 @@
 			files = (
 				AA341E44B1AD293F91600D7B /* BatteryGuardXPCProtocol.swift in Sources */,
 				5B55E8DBB99EDAA19CFE59CA /* HelperTool.swift in Sources */,
+				AFDB779914FFD7765818DC0A /* SMCController.swift in Sources */,
 				BA442BBDF7E26B8B013C905D /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -464,7 +468,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				INFOPLIST_FILE = BatteryGuard/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -486,7 +490,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				INFOPLIST_FILE = BatteryGuard/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -506,6 +510,7 @@
 				CODE_SIGN_ENTITLEMENTS = BatteryGuardHelper/BatteryGuardHelper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = BatteryGuardHelper/Info.plist;
 				INSTALL_PATH = /Library/PrivilegedHelperTools;
@@ -515,6 +520,12 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"$(SRCROOT)/BatteryGuardHelper/Info.plist",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibrardev.BatteryGuard.Helper;
 				PRODUCT_NAME = com.ibrardev.BatteryGuard.Helper;
 				SDKROOT = macosx;
@@ -528,6 +539,7 @@
 				CODE_SIGN_ENTITLEMENTS = BatteryGuardHelper/BatteryGuardHelper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = BatteryGuardHelper/Info.plist;
 				INSTALL_PATH = /Library/PrivilegedHelperTools;
@@ -537,6 +549,12 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					"$(SRCROOT)/BatteryGuardHelper/Info.plist",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ibrardev.BatteryGuard.Helper;
 				PRODUCT_NAME = com.ibrardev.BatteryGuard.Helper;
 				SDKROOT = macosx;

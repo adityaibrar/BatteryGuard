@@ -2,9 +2,18 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- Sandbox DIMATIKAN: BatteryGuard adalah developer tool, bukan App Store app.
+	     Tanpa sandbox, koneksi XPC ke system daemon bisa berjalan normal. -->
 	<key>com.apple.security.app-sandbox</key>
+	<false/>
+	<!-- Izin baca/tulis file untuk konfigurasi -->
+	<key>com.apple.security.files.user-selected.read-write</key>
 	<true/>
-	<key>com.apple.security.files.user-selected.read-only</key>
+	<!-- Network untuk NetworkSpeedMonitor -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	<!-- Debug: izinkan Xcode attach debugger -->
+	<key>com.apple.security.get-task-allow</key>
 	<true/>
 </dict>
 </plist>
