@@ -152,9 +152,13 @@ final class BatteryMonitor: ObservableObject {
         let cycleCount: Int? = getProperty("CycleCount")
         let maxCap: Int? = getProperty("AppleRawMaxCapacity")
         let designCap: Int? = getProperty("DesignCapacity")
+        // NominalChargeCapacity: nilai yang dipakai macOS System Information
+        // untuk menampilkan "Maximum Capacity" percentage (contoh: 3925 mAh → 86%)
+        let nominalCap: Int? = getProperty("NominalChargeCapacity")
 
         let newHealth = BatteryHealth(
             maxCapacity: maxCap,
+            nominalChargeCapacity: nominalCap,
             designCapacity: designCap,
             cycleCount: cycleCount,
             condition: getProperty("BatteryHealthCondition"),

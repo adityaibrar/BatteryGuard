@@ -1,5 +1,5 @@
 // BatteryHealthCard.swift
-// Card 2: Kesehatan baterai — capacity, cycle count, condition
+// Card 2: Kesehatan baterai — menggunakan NominalChargeCapacity (= macOS System Information)
 
 import SwiftUI
 
@@ -8,17 +8,23 @@ struct BatteryHealthCard: View {
 
     var health: BatteryHealth { viewModel.batteryHealth }
 
+    /// healthPercent sudah otomatis gunakan NominalChargeCapacity jika tersedia
+    /// = NominalChargeCapacity / DesignCapacity × 100 (sama dengan System Information)
+    private var primaryHealthPercent: Double? {
+        health.healthPercent
+    }
+
     var body: some View {
         DashboardCardView(title: "Battery Health", icon: "heart.fill", accentColor: healthColor) {
             VStack(spacing: 10) {
-                // Health percentage — big number
-                if let healthPercent = health.healthPercent {
+                // MARK: Health percentage — big number
+                if let primaryPct = primaryHealthPercent {
                     HStack {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("Health")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Text(String(format: "%.1f%%", healthPercent))
+                            Text(String(format: "%.0f%%", primaryPct))
                                 .font(.system(size: 28, weight: .bold, design: .rounded))
                                 .foregroundStyle(healthColor)
                         }
@@ -30,10 +36,10 @@ struct BatteryHealthCard: View {
                             Circle()
                                 .stroke(Color.secondary.opacity(0.2), lineWidth: 6)
                             Circle()
-                                .trim(from: 0, to: healthPercent / 100.0)
+                                .trim(from: 0, to: primaryPct / 100.0)
                                 .stroke(healthColor, style: StrokeStyle(lineWidth: 6, lineCap: .round))
                                 .rotationEffect(.degrees(-90))
-                                .animation(.easeInOut, value: healthPercent)
+                                .animation(.easeInOut, value: primaryPct)
                         }
                         .frame(width: 52, height: 52)
                     }
@@ -42,9 +48,12 @@ struct BatteryHealthCard: View {
                 Divider()
 
                 VStack(spacing: 6) {
+                    // NominalChargeCapacity — nilai yang sama dengan macOS System Information
                     CardInfoRow(
                         label: "Max Capacity",
-                        value: health.maxCapacity.map { "\($0) mAh" } ?? "—"
+                        value: health.nominalChargeCapacity.map { "\($0) mAh" }
+                            ?? health.maxCapacity.map { "\($0) mAh" }
+                            ?? "—"
                     )
                     CardInfoRow(
                         label: "Design Capacity",
@@ -60,11 +69,14 @@ struct BatteryHealthCard: View {
                         value: health.condition ?? "—",
                         valueColor: conditionColor
                     )
-                    if let maxPct = health.maxCapacityPercent {
+                    // Raw capacity sebagai referensi (biasanya berbeda karena Apple calibration)
+                    if let raw = health.maxCapacity,
+                       let nominal = health.nominalChargeCapacity,
+                       raw != nominal {
                         CardInfoRow(
-                            label: "macOS Assessment",
-                            value: "\(maxPct)% Max Capacity",
-                            valueColor: maxPct >= 80 ? .green : .orange
+                            label: "Raw Capacity",
+                            value: "\(raw) mAh",
+                            valueColor: .secondary
                         )
                     }
                 }
@@ -73,7 +85,7 @@ struct BatteryHealthCard: View {
     }
 
     private var healthColor: Color {
-        guard let h = health.healthPercent else { return .secondary }
+        guard let h = primaryHealthPercent else { return .secondary }
         switch h {
         case 80...: return .green
         case 60..<80: return .orange

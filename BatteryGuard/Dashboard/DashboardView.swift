@@ -71,6 +71,7 @@ struct DashboardView: View {
                 BatteryTemperatureCard()
                 PowerConsumptionCard()
                 PowerFlowCard()
+                NetworkSpeedCard()
                 EnergyAppsCard()
                 CalibrationCard()
             }

@@ -1,41 +1,20 @@
 // BatteryLevelCard.swift
-// Card 4: Battery level real-time dengan area chart (Swift Charts)
+// Card 4: Battery level real-time dengan area chart 24 jam (Swift Charts)
 
 import SwiftUI
 import Charts
-
-// MARK: - Battery Level History (simple in-memory buffer)
-
-/// Buffer sederhana untuk chart — simpan max 60 titik (1 menit kalau polling 1 detik)
-class BatteryLevelHistory: ObservableObject {
-    struct DataPoint: Identifiable {
-        let id = UUID()
-        let timestamp: Date
-        let percentage: Int
-    }
-
-    @Published var points: [DataPoint] = []
-    private let maxPoints = 60
-
-    func add(_ percentage: Int) {
-        let point = DataPoint(timestamp: Date(), percentage: percentage)
-        points.append(point)
-        if points.count > maxPoints {
-            points.removeFirst(points.count - maxPoints)
-        }
-    }
-}
 
 // MARK: - BatteryLevelCard
 
 struct BatteryLevelCard: View {
     @EnvironmentObject var viewModel: SystemStatsViewModel
-    @StateObject private var history = BatteryLevelHistory()
+    /// Gunakan LevelHistoryStore.shared sebagai sumber data persisten
+    @ObservedObject private var store = LevelHistoryStore.shared
 
     var body: some View {
         DashboardCardView(title: "Battery Level", icon: "battery.100.bolt", accentColor: levelColor) {
             VStack(alignment: .leading, spacing: 12) {
-                // Current percentage — large display
+                // MARK: Current percentage — large display
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text("\(viewModel.batteryStatus.percentage)")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
@@ -46,7 +25,7 @@ struct BatteryLevelCard: View {
 
                     Spacer()
 
-                    // Charging badge
+                    // Status badge
                     if viewModel.batteryStatus.isCharging {
                         Label("Charging", systemImage: "bolt.fill")
                             .font(.caption)
@@ -62,16 +41,17 @@ struct BatteryLevelCard: View {
                     }
                 }
 
-                // Area Chart
-                if history.points.count > 1 {
-                    Chart(history.points) { point in
+                // MARK: 24-hour Area Chart
+                let chartPoints = store.points
+                if chartPoints.count > 1 {
+                    Chart(chartPoints) { point in
                         AreaMark(
                             x: .value("Time", point.timestamp),
                             y: .value("Level", point.percentage)
                         )
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [levelColor.opacity(0.4), levelColor.opacity(0.05)],
+                                colors: [levelColor.opacity(0.4), levelColor.opacity(0.04)],
                                 startPoint: .top,
                                 endPoint: .bottom
                             )
@@ -85,7 +65,15 @@ struct BatteryLevelCard: View {
                         .lineStyle(StrokeStyle(lineWidth: 2))
                     }
                     .chartYScale(domain: 0...100)
-                    .chartXAxis(.hidden)
+                    .chartXAxis {
+                        AxisMarks(values: .stride(by: .hour, count: 4)) { value in
+                            AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                                .foregroundStyle(Color.secondary.opacity(0.2))
+                            AxisValueLabel(format: .dateTime.hour())
+                                .foregroundStyle(Color.secondary)
+                                .font(.system(size: 9))
+                        }
+                    }
                     .chartYAxis {
                         AxisMarks(values: [0, 25, 50, 75, 100]) { value in
                             AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
@@ -99,23 +87,39 @@ struct BatteryLevelCard: View {
                             }
                         }
                     }
-                    .frame(height: 80)
-                    .animation(.easeInOut, value: history.points.count)
+                    .frame(height: 90)
+                    .animation(.easeInOut, value: chartPoints.count)
+
+                    // Range label
+                    HStack {
+                        Text("Last 24 hours")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text("\(chartPoints.count) data points")
+                            .font(.system(size: 9))
+                            .foregroundStyle(.secondary)
+                    }
                 } else {
-                    // Placeholder chart
+                    // Placeholder: belum ada cukup data
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(Color.secondary.opacity(0.1))
-                        .frame(height: 80)
+                        .fill(Color.secondary.opacity(0.08))
+                        .frame(height: 90)
                         .overlay(
-                            Text("Collecting data...")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            VStack(spacing: 4) {
+                                Image(systemName: "chart.line.uptrend.xyaxis")
+                                    .foregroundStyle(.secondary.opacity(0.5))
+                                Text("Collecting data... (updates every 5 min)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
                         )
                 }
             }
         }
+        // Record setiap kali batteryStatus berubah — store handle dedup 5-menit sendiri
         .onReceive(viewModel.$batteryStatus) { status in
-            history.add(status.percentage)
+            store.record(status.percentage)
         }
     }
 

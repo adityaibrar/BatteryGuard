@@ -247,8 +247,8 @@ final class ChargeMonitor {
     /// Default 2% → set 75% berarti charging berhenti di 75%, start lagi di 73%
     var hysteresis: Int = 2
 
-    /// Interval polling dalam detik
-    var pollInterval: TimeInterval = 15
+    /// Interval polling dalam detik — 5 detik agar responsif saat charging cepat
+    var pollInterval: TimeInterval = 5
 
     // MARK: - Public API
 
@@ -303,10 +303,13 @@ final class ChargeMonitor {
         NSLog("[ChargeMonitor] Poll: battery=%d%%, limit=%d%%, inhibiting=%@, charging=%@",
               currentPct, currentLimit, isInhibiting ? "YES" : "NO", charging ? "YES" : "NO")
 
-        if currentPct >= currentLimit && !isInhibiting {
+        if currentPct >= currentLimit {
             // Baterai mencapai atau melewati limit — STOP charging
-            NSLog("[ChargeMonitor] 🛑 Battery %d%% >= limit %d%% → INHIBIT charging",
-                  currentPct, currentLimit)
+            if !isInhibiting {
+                NSLog("[ChargeMonitor] 🛑 Battery %d%% >= limit %d%% → INHIBIT charging",
+                      currentPct, currentLimit)
+            }
+            // Selalu tulis ulang inhibit (idempotent) untuk memastikan tidak ada drift
             setChargeInhibit(true)
             isInhibiting = true
 
@@ -326,13 +329,26 @@ final class ChargeMonitor {
             try smc.open()
             defer { smc.close() }
             try smc.writeByte(Self.chargeInhibitKey, value: value)
-            NSLog("[ChargeMonitor] CH0B = 0x%02X (%@)", value,
-                  inhibit ? "INHIBIT" : "ALLOW")
+
+            // Verifikasi: baca balik CH0B untuk konfirmasi berhasil
+            if let readback = try? smc.readByte(Self.chargeInhibitKey) {
+                NSLog("[ChargeMonitor] CH0B write=0x%02X, readback=0x%02X (%@)",
+                      value, readback, inhibit ? "INHIBIT" : "ALLOW")
+                if readback != value {
+                    NSLog("[ChargeMonitor] ⚠️ CH0B readback mismatch! Ditulis 0x%02X tapi terbaca 0x%02X",
+                          value, readback)
+                }
+            } else {
+                NSLog("[ChargeMonitor] CH0B = 0x%02X (%@) — readback tidak tersedia",
+                      value, inhibit ? "INHIBIT" : "ALLOW")
+            }
         } catch SMCController.SMCError.keyNotFound {
             // CH0B tidak ada — mungkin Mac yang sangat baru atau Intel
             // Coba fallback ke CHWA untuk Apple Silicon
             NSLog("[ChargeMonitor] ⚠️ CH0B tidak ditemukan, coba CHWA fallback")
             tryChwaFallback(inhibit: inhibit)
+        } catch SMCController.SMCError.notPrivileged {
+            NSLog("[ChargeMonitor] ❌ NOT PRIVILEGED — helper tidak berjalan sebagai root!")
         } catch {
             NSLog("[ChargeMonitor] ❌ Gagal set CH0B: %@", error.localizedDescription)
         }

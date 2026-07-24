@@ -88,6 +88,7 @@ targets:
       - path: BatteryGuard/Dashboard/Cards/PowerFlowCard.swift
       - path: BatteryGuard/Dashboard/Cards/EnergyAppsCard.swift
       - path: BatteryGuard/Dashboard/Cards/CalibrationCard.swift
+      - path: BatteryGuard/Dashboard/Cards/NetworkSpeedCard.swift
       # Settings
       - path: BatteryGuard/Settings/SettingsView.swift
       # Models
@@ -102,6 +103,7 @@ targets:
       - path: BatteryGuard/Services/TemperatureMonitor.swift
       - path: BatteryGuard/Services/ChargeLimitManager.swift
       - path: BatteryGuard/Services/CycleHistoryStore.swift
+      - path: BatteryGuard/Services/LevelHistoryStore.swift
       - path: BatteryGuard/Services/PreferencesStore.swift
       # XPC client
       - path: BatteryGuard/XPC/HelperConnection.swift

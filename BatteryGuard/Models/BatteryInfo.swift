@@ -52,12 +52,20 @@ struct BatterySpecs: Equatable {
 
 /// Informasi kesehatan baterai dari IOKit
 struct BatteryHealth: Equatable {
-    /// Kapasitas maksimum saat ini (mAh)
+    /// Kapasitas maksimum saat ini (mAh) dari AppleRawMaxCapacity
     var maxCapacity: Int?
+    /// Kapasitas nominal (mAh) dari NominalChargeCapacity — dipakai macOS System Information
+    /// 86% = NominalChargeCapacity(3925) / DesignCapacity(4563)
+    var nominalChargeCapacity: Int?
     /// Kapasitas desain (mAh) — sama dengan BatterySpecs.designCapacity
     var designCapacity: Int?
-    /// Persentase health = maxCapacity / designCapacity × 100
+    /// Persentase health versi macOS System Information:
+    /// = NominalChargeCapacity / DesignCapacity × 100
+    /// Jika NominalChargeCapacity tidak tersedia, fallback ke AppleRawMaxCapacity
     var healthPercent: Double? {
+        if let nominal = nominalChargeCapacity, let design = designCapacity, design > 0 {
+            return Double(nominal) / Double(design) * 100.0
+        }
         guard let max = maxCapacity, let design = designCapacity, design > 0 else { return nil }
         return Double(max) / Double(design) * 100.0
     }
@@ -72,6 +80,7 @@ struct BatteryHealth: Equatable {
 
     static let empty = BatteryHealth()
 }
+
 
 // MARK: - Power Adapter Info
 

@@ -1,5 +1,7 @@
 // NetworkStats.swift
 // BatteryGuard — Network speed data model
+// Unit: decimal (SI) — 1 KB = 1,000 bytes, 1 MB = 1,000,000 bytes
+// Konsisten dengan Activity Monitor macOS
 
 import Foundation
 
@@ -28,16 +30,21 @@ struct NetworkStats: Equatable {
 
     // MARK: - Private Helpers
 
+    /// Format kecepatan dalam satuan decimal (SI) — sama dengan Activity Monitor
+    /// 1 KB/s = 1,000 bytes/s  |  1 MB/s = 1,000,000 bytes/s
     private func formatSpeed(_ bytesPerSec: Double) -> String {
-        let mbPerSec = bytesPerSec / 1_048_576
+        let mbPerSec = bytesPerSec / 1_000_000
         if mbPerSec >= 1.0 {
             return String(format: "%.1f MB/s", mbPerSec)
         }
-        let kbPerSec = bytesPerSec / 1024
+        let kbPerSec = bytesPerSec / 1_000
         if kbPerSec >= 1.0 {
             return String(format: "%.0f KB/s", kbPerSec)
         }
-        return String(format: "%.0f B/s", bytesPerSec)
+        if bytesPerSec > 0 {
+            return String(format: "%.0f B/s", bytesPerSec)
+        }
+        return "0 KB/s"
     }
 }
 

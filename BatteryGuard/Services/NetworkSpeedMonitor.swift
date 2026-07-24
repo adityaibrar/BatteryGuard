@@ -1,6 +1,15 @@
 // NetworkSpeedMonitor.swift
 // BatteryGuard — Monitor kecepatan jaringan via getifaddrs()
-// Menggunakan delta byte counter tiap polling interval — public API, tidak butuh privilege
+//
+// Strategi (sama dengan Activity Monitor):
+// 1. Temukan interface yang punya IP address aktif (AF_INET / AF_INET6)
+// 2. Baca AF_LINK byte counter HANYA untuk interface tersebut
+// 3. Delta / interval = speed bytes per detik
+//
+// Ini memastikan nilai sama dengan Activity Monitor karena:
+// - En1/En2 (Thunderbolt bridge) diexclude — IFF_RUNNING tapi tidak punya IP
+// - anpi0/anpi1, awdl0, llw0, ap1 juga diexclude dengan cara yang sama
+// - utun* (VPN) diinclude hanya jika aktif dengan IP
 
 import Foundation
 import Darwin
@@ -8,7 +17,7 @@ import Darwin
 // MARK: - NetworkSpeedMonitor
 
 /// Membaca kecepatan upload/download dari network interface secara real-time
-/// Strategi: snapshot byte counter → delta / interval = speed
+/// Hanya memonitor interface yang punya IP address aktif (= Activity Monitor behavior)
 final class NetworkSpeedMonitor: ObservableObject {
 
     // MARK: - Published
@@ -58,34 +67,34 @@ final class NetworkSpeedMonitor: ObservableObject {
         var primaryInterface = "—"
 
         for current in currentSnapshot {
-            // Cari snapshot sebelumnya untuk interface yang sama
             if let previous = previousSnapshot.first(where: { $0.name == current.name }) {
                 let interval = current.timestamp.timeIntervalSince(previous.timestamp)
                 guard interval > 0 else { continue }
 
-                // Delta bytes / interval = bytes per second
-                // Gunakan wrapping subtraction untuk handle counter overflow
+                // Wrapping subtraction untuk handle counter overflow/reset
                 let rxDelta = current.rxBytes &- previous.rxBytes
                 let txDelta = current.txBytes &- previous.txBytes
 
-                // Sanity check: skip jika delta terlalu besar (kemungkinan overflow/reset)
-                let maxReasonableBytesPerSec: UInt64 = 1_250_000_000 // ~10 Gbps
-                if rxDelta > maxReasonableBytesPerSec || txDelta > maxReasonableBytesPerSec {
-                    continue
-                }
+                // Sanity check: skip jika delta tidak masuk akal (>10 Gbps)
+                let maxReasonableBytesPerSec: UInt64 = 1_250_000_000
+                guard rxDelta <= maxReasonableBytesPerSec, txDelta <= maxReasonableBytesPerSec
+                else { continue }
 
                 let downloadSpeed = Double(rxDelta) / interval
-                let uploadSpeed = Double(txDelta) / interval
+                let uploadSpeed   = Double(txDelta) / interval
 
                 totalDownload += downloadSpeed
-                totalUpload += uploadSpeed
+                totalUpload   += uploadSpeed
 
-                // Track interface dengan traffic tertinggi sebagai primary
-                if downloadSpeed + uploadSpeed > 0 && primaryInterface == "—" {
+                // Simpan nama interface pertama yang punya traffic sebagai primary
+                if downloadSpeed + uploadSpeed > 0, primaryInterface == "—" {
                     primaryInterface = current.name
                 }
             }
         }
+
+        // Update snapshot untuk iterasi berikutnya
+        previousSnapshot = currentSnapshot
 
         let stats = NetworkStats(
             downloadBytesPerSec: totalDownload,
@@ -94,47 +103,64 @@ final class NetworkSpeedMonitor: ObservableObject {
             timestamp: now
         )
 
-        // Pastikan update di main thread
         DispatchQueue.main.async { [weak self] in
             self?.networkStats = stats
         }
-
-        // Update snapshot untuk iterasi berikutnya
-        previousSnapshot = currentSnapshot
     }
 
-    // MARK: - getifaddrs() Snapshot
+    // MARK: - getifaddrs() Two-Pass Snapshot
+    //
+    // Pass 1: kumpulkan nama interface yang punya AF_INET atau AF_INET6 address.
+    //         Ini secara natural mengexclude: Thunderbolt bridge (en1/en2),
+    //         anpi, awdl, llw, ap1 — semua yang RUNNING tapi tidak connected ke network.
+    //
+    // Pass 2: baca AF_LINK byte counter hanya untuk interface dari Pass 1.
+    //
+    // Hasilnya identik dengan apa yang dimonitor Activity Monitor.
 
-    /// Ambil snapshot byte counter dari semua interface via getifaddrs()
     private func getCurrentSnapshot() -> [NetworkInterfaceSnapshot] {
-        var snapshots: [NetworkInterfaceSnapshot] = []
         var ifaddr: UnsafeMutablePointer<ifaddrs>?
-
         guard getifaddrs(&ifaddr) == 0, let firstAddr = ifaddr else { return [] }
         defer { freeifaddrs(ifaddr) }
 
+        // --- Pass 1: Kumpulkan interface yang punya IP address aktif ---
+        var activeInterfaces = Set<String>()
         var ptr: UnsafeMutablePointer<ifaddrs>? = firstAddr
 
         while let current = ptr {
-            let iface = current.pointee
-            let name = String(cString: iface.ifa_name)
+            let iface  = current.pointee
+            let name   = String(cString: iface.ifa_name)
+            let family = iface.ifa_addr?.pointee.sa_family ?? 0
 
-            // Filter hanya interface yang relevan (en0=WiFi, en1=Eth, utun=VPN)
-            // SKIP: lo, bridge, vmnet, awdl, llw, p2p, gif, stf, anpi
-            guard shouldMonitorInterface(name) else {
+            // Hanya interface dengan IPv4 atau IPv6 address nyata
+            if family == UInt8(AF_INET) || family == UInt8(AF_INET6) {
+                // Skip loopback (127.x, ::1)
+                let flags = Int32(iface.ifa_flags)
+                let isLoopback = (flags & IFF_LOOPBACK) != 0
+                if !isLoopback {
+                    activeInterfaces.insert(name)
+                }
+            }
+            ptr = iface.ifa_next
+        }
+
+        // --- Pass 2: Baca AF_LINK stats hanya untuk interface aktif ---
+        var snapshots: [NetworkInterfaceSnapshot] = []
+        ptr = firstAddr
+
+        while let current = ptr {
+            let iface  = current.pointee
+            let name   = String(cString: iface.ifa_name)
+            let family = iface.ifa_addr?.pointee.sa_family ?? 0
+
+            // Hanya proses interface dari Pass 1 dengan AF_LINK data
+            guard activeInterfaces.contains(name), family == UInt8(AF_LINK) else {
                 ptr = iface.ifa_next
                 continue
             }
 
-            // Hanya proses AF_LINK (link layer stats) — ini yang punya byte counter
-            let family = iface.ifa_addr?.pointee.sa_family
-            guard family == UInt8(AF_LINK) else {
-                ptr = iface.ifa_next
-                continue
-            }
-
-            // Interface harus running
-            let flags = Int32(iface.ifa_flags)
+            // Interface harus dalam state RUNNING
+            let flags     = Int32(iface.ifa_flags)
             let isRunning = (flags & IFF_RUNNING) != 0
             guard isRunning else {
                 ptr = iface.ifa_next
@@ -157,33 +183,15 @@ final class NetworkSpeedMonitor: ObservableObject {
         return snapshots
     }
 
-    // MARK: - Interface Filter Helper
+    // MARK: - Friendly Name
 
-    /// Daftar prefix interface yang ingin dimonitor
-    /// en = Ethernet/WiFi, utun = VPN, ipsec = VPN
-    /// Bridge/VLAN/virtual interfaces di-skip karena biasanya double-count
-    private func shouldMonitorInterface(_ name: String) -> Bool {
-        let monitored = ["en", "utun", "ipsec", "ppp"]
-        let excluded  = ["lo", "bridge", "vmnet", "p2p", "awdl", "llw", "gif", "stf", "anpi"]
-
-        for prefix in excluded {
-            if name.hasPrefix(prefix) { return false }
-        }
-        for prefix in monitored {
-            if name.hasPrefix(prefix) { return true }
-        }
-        return false
-    }
-
-    /// Konversi nama interface ke nama yang mudah dibaca
-    /// en0 → "WiFi", en1 → "Ethernet", utun0 → "VPN"
+    /// Konversi nama interface ke label yang mudah dibaca
     private func friendlyName(_ name: String) -> String {
         if name == "—" { return "—" }
-        if name.hasPrefix("en0") { return "WiFi" }
-        if name.hasPrefix("en1") { return "Ethernet" }
-        if name.hasPrefix("en") { return "Network" }
+        if name.hasPrefix("en0") { return "Wi-Fi" }
+        if name.hasPrefix("en")  { return "Ethernet" }
         if name.hasPrefix("utun") || name.hasPrefix("ipsec") { return "VPN" }
-        if name.hasPrefix("ppp") { return "PPP" }
+        if name.hasPrefix("ppp")  { return "PPP" }
         return name
     }
 }
