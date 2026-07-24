@@ -58,22 +58,9 @@ private struct MenuBarLabel: View {
     @ObservedObject var prefs: PreferencesStore
 
     var body: some View {
-        HStack(spacing: 4) {
-            Image(systemName: viewModel.batteryIconName)
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(batteryColor)
-
-            if prefs.showBatteryPercent {
-                Text(viewModel.batteryPercentLabel)
-                    .font(.system(size: 12, weight: .medium, design: .monospaced))
-            }
-        }
-    }
-
-    private var batteryColor: Color {
-        if viewModel.chargeLimitState.isEnabled && viewModel.batteryStatus.chargeLimitReached {
-            return .orange
-        }
-        return .primary
+        Text("↓ \(viewModel.networkStats.downloadFormatted)  ↑ \(viewModel.networkStats.uploadFormatted)")
+            .font(.system(size: 12, weight: .medium, design: .monospaced))
+            // Monospaced digit agar lebar teks stabil
+            .monospacedDigit()
     }
 }
