@@ -324,53 +324,41 @@ final class ChargeMonitor {
     }
 
     private func setChargeInhibit(_ inhibit: Bool) {
-        let value: UInt8 = inhibit ? Self.chargeInhibitOn : Self.chargeInhibitOff
+        let ch0bValue: UInt8 = inhibit ? Self.chargeInhibitOn : Self.chargeInhibitOff
+        
         do {
             try smc.open()
             defer { smc.close() }
             
-            var ch0bSuccess = false
-            
-            // 1. Tulis ke CH0B
+            // 0. Coba tulis ke BCLM (Battery Charge Limit Maximum) - Native macOS Monterey+
             do {
-                try smc.writeByte(Self.chargeInhibitKey, value: value)
-                ch0bSuccess = true
+                try smc.writeByte("BCLM", value: UInt8(currentLimit))
+            } catch {
+                NSLog("[ChargeMonitor] ⚠️ BCLM fallback gagal atau tidak didukung: %@", error.localizedDescription)
+            }
+            
+            // 1. Logic persis dari repository AlDente: 
+            // Mereka HANYA menulis ke CH0B, dan khusus Apple Silicon, mereka menulisnya 2x berurutan.
+            // Tidak ada CH0C maupun CHWA dalam source code open source mereka.
+            do {
+                try smc.writeByte(Self.chargeInhibitKey, value: ch0bValue)
+                try smc.writeByte(Self.chargeInhibitKey, value: ch0bValue) // AlDente double-write for Apple Silicon
             } catch SMCController.SMCError.keyNotFound {
                 NSLog("[ChargeMonitor] ⚠️ CH0B tidak ditemukan")
             } catch {
                 NSLog("[ChargeMonitor] ❌ Gagal set CH0B: %@", error.localizedDescription)
             }
             
-            // 2. Tulis ke CH0C (Wajib untuk beberapa chip M-Series agar menggunakan Power Adapter)
-            do {
-                try smc.writeByte("CH0C", value: value)
-            } catch SMCController.SMCError.keyNotFound {
-                NSLog("[ChargeMonitor] ⚠️ CH0C tidak ditemukan")
-            } catch {
-                NSLog("[ChargeMonitor] ❌ Gagal set CH0C: %@", error.localizedDescription)
+            // Verifikasi: baca balik CH0B untuk konfirmasi berhasil
+            if let readback = try? smc.readByte(Self.chargeInhibitKey) {
+                NSLog("[ChargeMonitor] CH0B write=0x%02X, readback=0x%02X (%@)",
+                      ch0bValue, readback, inhibit ? "INHIBIT" : "ALLOW")
+                if readback != ch0bValue {
+                    NSLog("[ChargeMonitor] ⚠️ CH0B readback mismatch! Ditulis 0x%02X tapi terbaca 0x%02X",
+                          ch0bValue, readback)
+                }
             }
             
-            // 3. Fallback CHWA jika CH0B gagal
-            if !ch0bSuccess {
-                NSLog("[ChargeMonitor] ⚠️ Mencoba CHWA fallback")
-                do {
-                    // CHWA: 1 = enable ~80% limit, 0 = disable limit
-                    try smc.writeByte("CHWA", value: inhibit ? 1 : 0)
-                    NSLog("[ChargeMonitor] CHWA fallback berhasil: %d", inhibit ? 1 : 0)
-                } catch {
-                    NSLog("[ChargeMonitor] ❌ CHWA fallback gagal: %@", error.localizedDescription)
-                }
-            } else {
-                // Verifikasi: baca balik CH0B untuk konfirmasi berhasil
-                if let readback = try? smc.readByte(Self.chargeInhibitKey) {
-                    NSLog("[ChargeMonitor] CH0B write=0x%02X, readback=0x%02X (%@)",
-                          value, readback, inhibit ? "INHIBIT" : "ALLOW")
-                    if readback != value {
-                        NSLog("[ChargeMonitor] ⚠️ CH0B readback mismatch! Ditulis 0x%02X tapi terbaca 0x%02X",
-                              value, readback)
-                    }
-                }
-            }
         } catch SMCController.SMCError.notPrivileged {
             NSLog("[ChargeMonitor] ❌ NOT PRIVILEGED — helper tidak berjalan sebagai root!")
         } catch {
