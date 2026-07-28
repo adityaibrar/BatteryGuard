@@ -71,15 +71,15 @@ struct DashboardView: View {
     private var mainDashboardGrid: some View {
         ScrollView {
             LazyVGrid(columns: gridColumns, alignment: .leading, spacing: 16) {
-                BatterySpecsCard()
+                NetworkSpeedCard()
                 BatteryHealthCard()
                 PowerAdapterCard()
                 BatteryLevelCard()
                 BatteryCyclesCard()
                 BatteryTemperatureCard()
                 PowerConsumptionCard()
+                BatterySpecsCard()
                 PowerFlowCard()
-                NetworkSpeedCard()
                 EnergyAppsCard()
                 CalibrationCard()
             }

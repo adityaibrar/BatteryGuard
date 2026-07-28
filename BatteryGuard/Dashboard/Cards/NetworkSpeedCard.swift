@@ -62,15 +62,17 @@ struct NetworkSpeedCard: View {
                 // MARK: Sparkline chart (1 menit terakhir)
                 if history.downloadPoints.count > 1 {
                     Chart {
+                        // Download (Positive Y)
                         ForEach(history.downloadPoints) { point in
                             AreaMark(
                                 x: .value("Time", point.timestamp),
                                 y: .value("Download", point.value)
                             )
                             .foregroundStyle(LinearGradient(
-                                colors: [.blue.opacity(0.3), .blue.opacity(0.02)],
+                                colors: [.blue.opacity(0.4), .blue.opacity(0.01)],
                                 startPoint: .top, endPoint: .bottom
                             ))
+                            
                             LineMark(
                                 x: .value("Time", point.timestamp),
                                 y: .value("Download", point.value)
@@ -78,10 +80,21 @@ struct NetworkSpeedCard: View {
                             .foregroundStyle(.blue)
                             .lineStyle(StrokeStyle(lineWidth: 1.5))
                         }
+                        
+                        // Upload (Negative Y)
                         ForEach(history.uploadPoints) { point in
+                            AreaMark(
+                                x: .value("Time", point.timestamp),
+                                y: .value("Upload", -point.value) // Negative for mirror effect
+                            )
+                            .foregroundStyle(LinearGradient(
+                                colors: [.green.opacity(0.01), .green.opacity(0.4)],
+                                startPoint: .top, endPoint: .bottom
+                            ))
+
                             LineMark(
                                 x: .value("Time", point.timestamp),
-                                y: .value("Upload", point.value)
+                                y: .value("Upload", -point.value) // Negative for mirror effect
                             )
                             .foregroundStyle(.green)
                             .lineStyle(StrokeStyle(lineWidth: 1.5))
@@ -89,6 +102,7 @@ struct NetworkSpeedCard: View {
                     }
                     .chartXAxis(.hidden)
                     .chartYAxis(.hidden)
+                    .chartYScale(domain: .automatic(includesZero: true))
                     .frame(height: 50)
                     .animation(.easeInOut(duration: 0.3), value: history.downloadPoints.count)
 
