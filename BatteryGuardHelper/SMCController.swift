@@ -157,6 +157,30 @@ final class SMCController {
         NSLog("[SMC] Wrote 0x%02X → key '%@'", value, key)
     }
 
+    func readBytes(_ key: String) throws -> (UInt8, UInt8, UInt8, UInt8) {
+        let info = try keyInfo(key)
+        var input = SMCParamStruct()
+        input.key = fourCC(key)
+        input.keyInfo.dataSize = info.dataSize
+        input.data8 = SMCParamStruct.Selector.kSMCReadKey.rawValue
+        let out = try call(&input)
+        return (out.bytes.0, out.bytes.1, out.bytes.2, out.bytes.3)
+    }
+
+    func writeBytes(_ key: String, bytes: (UInt8, UInt8, UInt8, UInt8), size: IOByteCount32) throws {
+        let info = try keyInfo(key)
+        var input = SMCParamStruct()
+        input.key = fourCC(key)
+        input.bytes.0 = bytes.0
+        input.bytes.1 = bytes.1
+        input.bytes.2 = bytes.2
+        input.bytes.3 = bytes.3
+        input.keyInfo.dataSize = size
+        input.data8 = SMCParamStruct.Selector.kSMCWriteKey.rawValue
+        _ = try call(&input)
+        NSLog("[SMC] Wrote bytes %02X %02X %02X %02X → key '%@'", bytes.0, bytes.1, bytes.2, bytes.3, key)
+    }
+
     // MARK: Private
 
     private func keyInfo(_ key: String) throws -> SMCParamStruct.SMCKeyInfoData {
@@ -333,30 +357,45 @@ final class ChargeMonitor {
             // 0. Coba tulis ke BCLM (Battery Charge Limit Maximum) - Native macOS Monterey+
             do {
                 try smc.writeByte("BCLM", value: UInt8(currentLimit))
+            } catch SMCController.SMCError.keyNotFound {
+                // Ignore silent
             } catch {
-                NSLog("[ChargeMonitor] ⚠️ BCLM fallback gagal atau tidak didukung: %@", error.localizedDescription)
+                NSLog("[ChargeMonitor] ⚠️ BCLM fallback gagal: %@", error.localizedDescription)
+            }
+
+            // 1. Coba tulis ke CHTE (SMC Key untuk Apple Silicon M2/M3 dsb)
+            do {
+                let chteBytes: (UInt8, UInt8, UInt8, UInt8) = inhibit ? (0x01, 0x00, 0x00, 0x00) : (0x00, 0x00, 0x00, 0x00)
+                try smc.writeBytes("CHTE", bytes: chteBytes, size: 4)
+                
+                // Verifikasi readback CHTE
+                if let readback = try? smc.readBytes("CHTE") {
+                    if readback.0 != chteBytes.0 {
+                        NSLog("[ChargeMonitor] ⚠️ CHTE readback mismatch! Ditulis %02X tapi terbaca %02X", chteBytes.0, readback.0)
+                    }
+                }
+            } catch SMCController.SMCError.keyNotFound {
+                // Ignore silent
+            } catch {
+                NSLog("[ChargeMonitor] ⚠️ CHTE gagal: %@", error.localizedDescription)
             }
             
-            // 1. Logic persis dari repository AlDente: 
-            // Mereka HANYA menulis ke CH0B, dan khusus Apple Silicon, mereka menulisnya 2x berurutan.
-            // Tidak ada CH0C maupun CHWA dalam source code open source mereka.
+            // 2. Logic CH0B (Untuk Mac yang mendukungnya seperti Intel atau M1 awal)
             do {
                 try smc.writeByte(Self.chargeInhibitKey, value: ch0bValue)
                 try smc.writeByte(Self.chargeInhibitKey, value: ch0bValue) // AlDente double-write for Apple Silicon
+                
+                // Verifikasi baca balik CH0B
+                if let readback = try? smc.readByte(Self.chargeInhibitKey) {
+                    if readback != ch0bValue {
+                        NSLog("[ChargeMonitor] ⚠️ CH0B readback mismatch! Ditulis 0x%02X tapi terbaca 0x%02X",
+                              ch0bValue, readback)
+                    }
+                }
             } catch SMCController.SMCError.keyNotFound {
-                NSLog("[ChargeMonitor] ⚠️ CH0B tidak ditemukan")
+                // Ignore silent
             } catch {
                 NSLog("[ChargeMonitor] ❌ Gagal set CH0B: %@", error.localizedDescription)
-            }
-            
-            // Verifikasi: baca balik CH0B untuk konfirmasi berhasil
-            if let readback = try? smc.readByte(Self.chargeInhibitKey) {
-                NSLog("[ChargeMonitor] CH0B write=0x%02X, readback=0x%02X (%@)",
-                      ch0bValue, readback, inhibit ? "INHIBIT" : "ALLOW")
-                if readback != ch0bValue {
-                    NSLog("[ChargeMonitor] ⚠️ CH0B readback mismatch! Ditulis 0x%02X tapi terbaca 0x%02X",
-                          ch0bValue, readback)
-                }
             }
             
         } catch SMCController.SMCError.notPrivileged {
