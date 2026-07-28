@@ -18,58 +18,21 @@ struct NetworkSpeedCard: View {
             icon: "network",
             accentColor: .cyan
         ) {
-            VStack(alignment: .leading, spacing: 12) {
-
-                // MARK: Download + Upload current speed
-                HStack(spacing: 16) {
-                    // Download
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .font(.caption)
-                                .foregroundStyle(.blue)
-                            Text("Download")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Text(viewModel.networkStats.downloadFormatted)
-                            .font(.system(size: 18, weight: .bold, design: .monospaced))
-                            .foregroundStyle(.blue)
-                            .contentTransition(.numericText())
-                    }
-
-                    Divider().frame(height: 32)
-
-                    // Upload
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "arrow.up.circle.fill")
-                                .font(.caption)
-                                .foregroundStyle(.green)
-                            Text("Upload")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Text(viewModel.networkStats.uploadFormatted)
-                            .font(.system(size: 18, weight: .bold, design: .monospaced))
-                            .foregroundStyle(.green)
-                            .contentTransition(.numericText())
-                    }
-
-                    Spacer()
-                }
-
-                // MARK: Sparkline chart (1 menit terakhir)
+            HStack(spacing: 16) {
+                // MARK: Sparkline chart (Left)
                 if history.downloadPoints.count > 1 {
+                    let now = history.downloadPoints.last?.timestamp ?? Date()
+                    let startDate = now.addingTimeInterval(-60)
+                    
                     Chart {
-                        // Download (Positive Y)
+                        // Download (Cyan, Area + Line)
                         ForEach(history.downloadPoints) { point in
                             AreaMark(
                                 x: .value("Time", point.timestamp),
                                 y: .value("Download", point.value)
                             )
                             .foregroundStyle(LinearGradient(
-                                colors: [.blue.opacity(0.4), .blue.opacity(0.01)],
+                                colors: [.cyan.opacity(0.4), .cyan.opacity(0.01)],
                                 startPoint: .top, endPoint: .bottom
                             ))
                             
@@ -77,52 +40,29 @@ struct NetworkSpeedCard: View {
                                 x: .value("Time", point.timestamp),
                                 y: .value("Download", point.value)
                             )
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(.cyan)
                             .lineStyle(StrokeStyle(lineWidth: 1.5))
                         }
                         
-                        // Upload (Negative Y)
+                        // Upload (Red, Line only)
                         ForEach(history.uploadPoints) { point in
-                            AreaMark(
-                                x: .value("Time", point.timestamp),
-                                y: .value("Upload", -point.value) // Negative for mirror effect
-                            )
-                            .foregroundStyle(LinearGradient(
-                                colors: [.green.opacity(0.01), .green.opacity(0.4)],
-                                startPoint: .top, endPoint: .bottom
-                            ))
-
                             LineMark(
                                 x: .value("Time", point.timestamp),
-                                y: .value("Upload", -point.value) // Negative for mirror effect
+                                y: .value("Upload", point.value)
                             )
-                            .foregroundStyle(.green)
+                            .foregroundStyle(.red)
                             .lineStyle(StrokeStyle(lineWidth: 1.5))
                         }
                     }
                     .chartXAxis(.hidden)
                     .chartYAxis(.hidden)
+                    .chartXScale(domain: startDate...now)
                     .chartYScale(domain: .automatic(includesZero: true))
-                    .frame(height: 50)
-                    .animation(.easeInOut(duration: 0.3), value: history.downloadPoints.count)
-
-                    // Legend
-                    HStack(spacing: 12) {
-                        Label("↓ Download", systemImage: "circle.fill")
-                            .font(.system(size: 9))
-                            .foregroundStyle(.blue)
-                        Label("↑ Upload", systemImage: "circle.fill")
-                            .font(.system(size: 9))
-                            .foregroundStyle(.green)
-                        Spacer()
-                        Text("Last 60s")
-                            .font(.system(size: 9))
-                            .foregroundStyle(.secondary)
-                    }
+                    .frame(height: 70)
                 } else {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.secondary.opacity(0.08))
-                        .frame(height: 50)
+                        .frame(height: 70)
                         .overlay(
                             Text("Collecting data...")
                                 .font(.caption2)
@@ -131,14 +71,45 @@ struct NetworkSpeedCard: View {
                 }
 
                 Divider()
+                    .frame(height: 70)
 
-                // MARK: Interface info
-                CardInfoRow(
-                    label: "Interface",
-                    value: viewModel.networkStats.primaryInterface == "—"
-                        ? "No activity"
-                        : viewModel.networkStats.primaryInterface
-                )
+                // MARK: Right Panel (Stats)
+                VStack(spacing: 8) {
+                    HStack {
+                        Text("Interface:")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(viewModel.networkStats.primaryInterface == "—" ? "None" : viewModel.networkStats.primaryInterface)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.primary)
+                    }
+                    
+                    Divider()
+                    
+                    HStack {
+                        Text("Data received/sec:")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(viewModel.networkStats.downloadFormatted)
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.cyan)
+                    }
+                    
+                    Divider()
+                    
+                    HStack {
+                        Text("Data sent/sec:")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(viewModel.networkStats.uploadFormatted)
+                            .font(.system(size: 12, weight: .bold, design: .monospaced))
+                            .foregroundStyle(.red)
+                    }
+                }
+                .frame(width: 190) // Fixed width to align nicely like a table
             }
         }
         .onReceive(viewModel.$networkStats) { stats in

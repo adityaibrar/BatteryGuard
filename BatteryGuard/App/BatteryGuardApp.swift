@@ -58,9 +58,11 @@ private struct MenuBarLabel: View {
     @ObservedObject var prefs: PreferencesStore
 
     var body: some View {
-        Text("↓ \(viewModel.networkStats.downloadFormatted)  ↑ \(viewModel.networkStats.uploadFormatted)")
+        let temp = viewModel.temperatures.cpuTemperature ?? viewModel.temperatures.batteryTemperature
+        let tempStr = temp != nil ? " \(temp!.shortFormatted)" : ""
+        
+        Text("↓\(viewModel.networkStats.downloadFormatted) ↑\(viewModel.networkStats.uploadFormatted)\(tempStr)")
             .font(.system(size: 12, weight: .medium, design: .monospaced))
-            // Monospaced digit agar lebar teks stabil
             .monospacedDigit()
     }
 }

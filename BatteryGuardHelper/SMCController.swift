@@ -265,7 +265,7 @@ final class ChargeMonitor {
     private let smc = SMCController()
     private var timer: DispatchSourceTimer?
     private var currentLimit: Int = 100
-    private var isInhibiting: Bool = false
+    private var isInhibiting: Bool? = nil // Optional agar bisa force-sync di awal
 
     /// Berapa persen di bawah limit sebelum charging diizinkan kembali
     /// Default 2% → set 75% berarti charging berhenti di 75%, start lagi di 73%
@@ -279,7 +279,7 @@ final class ChargeMonitor {
     /// Mulai monitoring dan terapkan limit
     func startMonitoring(limit: Int) {
         currentLimit = limit
-        isInhibiting = false
+        isInhibiting = nil // Force sync dengan SMC
 
         NSLog("[ChargeMonitor] Start monitoring — limit: %d%%, hysteresis: %d%%, poll: %.0fs",
               limit, hysteresis, pollInterval)
@@ -301,6 +301,7 @@ final class ChargeMonitor {
     func updateLimit(_ limit: Int) {
         NSLog("[ChargeMonitor] Limit diubah: %d%% → %d%%", currentLimit, limit)
         currentLimit = limit
+        isInhibiting = nil // Force sync SMC untuk limit baru
         // Langsung enforce dengan limit baru
         checkAndEnforce()
     }
@@ -310,8 +311,9 @@ final class ChargeMonitor {
         timer?.cancel()
         timer = nil
         // Pastikan charging diizinkan kembali setelah stop
+        currentLimit = 100 // Kembalikan batas BCLM ke 100%
         setChargeInhibit(false)
-        isInhibiting = false
+        isInhibiting = nil
         NSLog("[ChargeMonitor] Monitoring dihentikan, charging diizinkan kembali")
     }
 
@@ -325,24 +327,25 @@ final class ChargeMonitor {
 
         let charging = BatteryReader.isCharging()
         NSLog("[ChargeMonitor] Poll: battery=%d%%, limit=%d%%, inhibiting=%@, charging=%@",
-              currentPct, currentLimit, isInhibiting ? "YES" : "NO", charging ? "YES" : "NO")
+              currentPct, currentLimit, (isInhibiting == true) ? "YES" : (isInhibiting == false ? "NO" : "UNKNOWN"), charging ? "YES" : "NO")
 
         if currentPct >= currentLimit {
             // Baterai mencapai atau melewati limit — STOP charging
-            if !isInhibiting {
+            if isInhibiting != true {
                 NSLog("[ChargeMonitor] 🛑 Battery %d%% >= limit %d%% → INHIBIT charging",
                       currentPct, currentLimit)
+                setChargeInhibit(true)
+                isInhibiting = true
             }
-            // Selalu tulis ulang inhibit (idempotent) untuk memastikan tidak ada drift
-            setChargeInhibit(true)
-            isInhibiting = true
 
-        } else if currentPct <= (currentLimit - hysteresis) && isInhibiting {
+        } else if currentPct <= (currentLimit - hysteresis) {
             // Baterai sudah turun di bawah (limit - hysteresis) — ALLOW charging kembali
-            NSLog("[ChargeMonitor] ✅ Battery %d%% <= %d%% (limit-hysteresis) → ALLOW charging",
-                  currentPct, currentLimit - hysteresis)
-            setChargeInhibit(false)
-            isInhibiting = false
+            if isInhibiting != false {
+                NSLog("[ChargeMonitor] ✅ Battery %d%% <= %d%% (limit-hysteresis) → ALLOW charging",
+                      currentPct, currentLimit - hysteresis)
+                setChargeInhibit(false)
+                isInhibiting = false
+            }
         }
         // Jika di antara keduanya → tidak ubah state (hysteresis zone)
     }
