@@ -44,11 +44,20 @@ struct NetworkSpeedCard: View {
                             .lineStyle(StrokeStyle(lineWidth: 1.5))
                         }
                         
-                        // Upload (Red, Line only)
+                        // Upload (Red, Area + Line, inverted)
                         ForEach(history.uploadPoints) { point in
+                            AreaMark(
+                                x: .value("Time", point.timestamp),
+                                y: .value("Upload", -point.value)
+                            )
+                            .foregroundStyle(LinearGradient(
+                                colors: [.red.opacity(0.01), .red.opacity(0.4)],
+                                startPoint: .top, endPoint: .bottom
+                            ))
+
                             LineMark(
                                 x: .value("Time", point.timestamp),
-                                y: .value("Upload", point.value)
+                                y: .value("Upload", -point.value)
                             )
                             .foregroundStyle(.red)
                             .lineStyle(StrokeStyle(lineWidth: 1.5))
@@ -57,7 +66,8 @@ struct NetworkSpeedCard: View {
                     .chartXAxis(.hidden)
                     .chartYAxis(.hidden)
                     .chartXScale(domain: startDate...now)
-                    .chartYScale(domain: .automatic(includesZero: true))
+                    // Let Y-Scale be automatic so it symmetric or accommodates the max/min
+                    .chartYScale(domain: .automatic)
                     .frame(height: 70)
                 } else {
                     RoundedRectangle(cornerRadius: 4)

@@ -29,6 +29,7 @@
 		9CCA169408310DED21D2587F /* BatteryLevelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36421B0C90B6F0B98B069E /* BatteryLevelCard.swift */; };
 		9F39EB2CC584CA3AB25412BE /* NetworkSpeedMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB67ED7AC5D0EF78AEBE5B /* NetworkSpeedMonitor.swift */; };
 		A85EA946F621230E4D05C92B /* SystemStatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 265F9DAC4B03C087C61FCF65 /* SystemStatsViewModel.swift */; };
+		A86EBA55F846264FB51D6073 /* LogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 176DD4F9B9A867986490F6D4 /* LogView.swift */; };
 		AA341E44B1AD293F91600D7B /* BatteryGuardXPCProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F46CCC0C2677862C1064594 /* BatteryGuardXPCProtocol.swift */; };
 		ABEA578784BC3979768522A5 /* PowerConsumptionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 785EF998C528D7BBD21E7453 /* PowerConsumptionCard.swift */; };
 		AC108C7AB36CE3FA447D3184 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2D2B51A5487AAA5BB185BCB /* IOKit.framework */; };
@@ -64,6 +65,7 @@
 /* Begin PBXFileReference section */
 		0AE35B77928C4BA1B2EA65EC /* BatteryHealthCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryHealthCard.swift; sourceTree = "<group>"; };
 		0BDD43B78B546DAF59498F6A /* BatteryCyclesCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatteryCyclesCard.swift; sourceTree = "<group>"; };
+		176DD4F9B9A867986490F6D4 /* LogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogView.swift; sourceTree = "<group>"; };
 		20B119B61AB05B713149EAB3 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
 		265F9DAC4B03C087C61FCF65 /* SystemStatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemStatsViewModel.swift; sourceTree = "<group>"; };
 		2C214E70176FE5C61975B18F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				963B3ABA1980618E14340EA1 /* Cards */,
 				A4814D88C82F13DEF80D2E78 /* Sidebar */,
 				99273F6EB7E2C422E82B5AD6 /* DashboardView.swift */,
+				176DD4F9B9A867986490F6D4 /* LogView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -438,6 +441,7 @@
 				68663B49EBD6F99A8051AF86 /* EnergyAppsCard.swift in Sources */,
 				63226D002F330E78C04E965A /* HelperConnection.swift in Sources */,
 				351AFBBCC9B8510DD2BAADFE /* LevelHistoryStore.swift in Sources */,
+				A86EBA55F846264FB51D6073 /* LogView.swift in Sources */,
 				3E570C0CF6A18530088DF441 /* MenuBarView.swift in Sources */,
 				503A5ED1823F021F381134AA /* NetworkSpeedCard.swift in Sources */,
 				9F39EB2CC584CA3AB25412BE /* NetworkSpeedMonitor.swift in Sources */,

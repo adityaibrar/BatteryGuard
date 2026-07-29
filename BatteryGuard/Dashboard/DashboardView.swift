@@ -51,18 +51,12 @@ struct DashboardView: View {
             mainDashboardGrid
         case .chargeControl:
             chargeControlView
-        case .sleepBehavior:
-            placeholderView("Sleep Behavior", icon: "moon.zzz", description: "Konfigurasi sleep behavior — akan diimplementasikan di fase berikutnya.")
         case .energyUse:
             EnergyAppsCard()
                 .padding()
                 .frame(maxWidth: 500)
-        case .schedule:
-            placeholderView("Schedule", icon: "calendar.badge.clock", description: "Schedule charging — akan diimplementasikan di Fase 6.")
-        case .shortcuts:
-            placeholderView("Shortcuts", icon: "keyboard", description: "Keyboard shortcuts — akan diimplementasikan di fase berikutnya.")
-        case .appearance:
-            placeholderView("Appearance", icon: "paintpalette", description: "Tema dan tampilan — akan diimplementasikan di fase berikutnya.")
+        case .log:
+            LogView()
         }
     }
 

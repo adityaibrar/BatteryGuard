@@ -75,6 +75,7 @@ targets:
       - path: BatteryGuard/MenuBar/StatusBarMetricView.swift
       # Dashboard root
       - path: BatteryGuard/Dashboard/DashboardView.swift
+      - path: BatteryGuard/Dashboard/LogView.swift
       - path: BatteryGuard/Dashboard/Sidebar/SidebarView.swift
       # Dashboard Cards
       - path: BatteryGuard/Dashboard/Cards/DashboardCardView.swift
