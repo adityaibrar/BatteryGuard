@@ -19,69 +19,103 @@ struct NetworkSpeedCard: View {
             accentColor: .cyan
         ) {
             HStack(spacing: 16) {
-                // MARK: Sparkline chart (Left)
-                if history.downloadPoints.count > 1 {
-                    let now = history.downloadPoints.last?.timestamp ?? Date()
-                    let startDate = now.addingTimeInterval(-60)
-                    
-                    Chart {
-                        // Download (Cyan, Area + Line)
-                        ForEach(history.downloadPoints) { point in
-                            AreaMark(
-                                x: .value("Time", point.timestamp),
-                                y: .value("Download", point.value)
-                            )
-                            .foregroundStyle(LinearGradient(
-                                colors: [.cyan.opacity(0.4), .cyan.opacity(0.01)],
-                                startPoint: .top, endPoint: .bottom
-                            ))
-                            
-                            LineMark(
-                                x: .value("Time", point.timestamp),
-                                y: .value("Download", point.value)
-                            )
-                            .foregroundStyle(.cyan)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5))
-                        }
-                        
-                        // Upload (Red, Area + Line, inverted)
-                        ForEach(history.uploadPoints) { point in
-                            AreaMark(
-                                x: .value("Time", point.timestamp),
-                                y: .value("Upload", -point.value)
-                            )
-                            .foregroundStyle(LinearGradient(
-                                colors: [.red.opacity(0.01), .red.opacity(0.4)],
-                                startPoint: .top, endPoint: .bottom
-                            ))
+                // MARK: Sparkline chart (Left) - Dua chart terpisah
+                VStack(spacing: 2) {
+                    if history.downloadPoints.count > 1 {
+                        let now = history.downloadPoints.last?.timestamp ?? Date()
+                        let startDate = history.downloadPoints.first?.timestamp ?? now.addingTimeInterval(-60)
+                        let maxDownload = history.downloadPoints.map(\.value).max() ?? 1
 
-                            LineMark(
-                                x: .value("Time", point.timestamp),
-                                y: .value("Upload", -point.value)
-                            )
-                            .foregroundStyle(.red)
-                            .lineStyle(StrokeStyle(lineWidth: 1.5))
+                        // --- Chart Download (Atas, Cyan/Biru) ---
+                        ZStack(alignment: .topLeading) {
+                            Chart {
+                                ForEach(history.downloadPoints) { point in
+                                    AreaMark(
+                                        x: .value("Time", point.timestamp),
+                                        y: .value("Download", point.value)
+                                    )
+                                    .foregroundStyle(LinearGradient(
+                                        colors: [.cyan.opacity(0.5), .cyan.opacity(0.05)],
+                                        startPoint: .top, endPoint: .bottom
+                                    ))
+
+                                    LineMark(
+                                        x: .value("Time", point.timestamp),
+                                        y: .value("Download", point.value)
+                                    )
+                                    .foregroundStyle(.cyan)
+                                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                                }
+                            }
+                            .chartXAxis(.hidden)
+                            .chartYAxis(.hidden)
+                            .chartXScale(domain: startDate...now)
+                            .chartYScale(domain: 0...(maxDownload * 1.2))
+                            .frame(height: 50)
+
+                            Text("↓")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.cyan.opacity(0.8))
+                                .padding([.top, .leading], 3)
                         }
+                        .frame(maxWidth: .infinity, minHeight: 50, maxHeight: 50)
+
+                        // Garis pemisah tipis di tengah
+                        Rectangle()
+                            .fill(Color.white.opacity(0.12))
+                            .frame(height: 1)
+
+                        // --- Chart Upload (Bawah, Merah) ---
+                        let maxUpload = history.uploadPoints.map(\.value).max() ?? 1
+
+                        ZStack(alignment: .bottomLeading) {
+                            Chart {
+                                ForEach(history.uploadPoints) { point in
+                                    AreaMark(
+                                        x: .value("Time", point.timestamp),
+                                        yStart: .value("Base", maxUpload * 1.2),
+                                        yEnd: .value("Upload", maxUpload * 1.2 - point.value)
+                                    )
+                                    .foregroundStyle(LinearGradient(
+                                        colors: [.red.opacity(0.05), .red.opacity(0.5)],
+                                        startPoint: .top, endPoint: .bottom
+                                    ))
+
+                                    LineMark(
+                                        x: .value("Time", point.timestamp),
+                                        y: .value("Upload", maxUpload * 1.2 - point.value)
+                                    )
+                                    .foregroundStyle(.red)
+                                    .lineStyle(StrokeStyle(lineWidth: 1.5))
+                                }
+                            }
+                            .chartXAxis(.hidden)
+                            .chartYAxis(.hidden)
+                            .chartXScale(domain: startDate...now)
+                            .chartYScale(domain: 0...(maxUpload * 1.2))
+                            .frame(height: 50)
+
+                            Text("↑")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundStyle(.red.opacity(0.8))
+                                .padding([.bottom, .leading], 3)
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 50, maxHeight: 50)
+                    } else {
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.secondary.opacity(0.08))
+                            .frame(maxWidth: .infinity, minHeight: 103, maxHeight: 103)
+                            .overlay(
+                                Text("Collecting data...")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            )
                     }
-                    .chartXAxis(.hidden)
-                    .chartYAxis(.hidden)
-                    .chartXScale(domain: startDate...now)
-                    // Let Y-Scale be automatic so it symmetric or accommodates the max/min
-                    .chartYScale(domain: .automatic)
-                    .frame(height: 70)
-                } else {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.secondary.opacity(0.08))
-                        .frame(height: 70)
-                        .overlay(
-                            Text("Collecting data...")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                        )
                 }
+                .frame(maxWidth: .infinity)
 
                 Divider()
-                    .frame(height: 70)
+                    .frame(height: 103)
 
                 // MARK: Right Panel (Stats)
                 VStack(spacing: 8) {
@@ -145,6 +179,19 @@ private class NetworkSpeedHistory: ObservableObject {
     @Published var uploadPoints: [Point] = []
     private let maxPoints = 60
 
+    init() {
+        // Pre-fill dengan 60 titik nol (1 detik per titik, dari 60 detik lalu s/d sekarang)
+        // Agar chart langsung terisi full dari kiri sejak pertama kali ditampilkan,
+        // tanpa perlu menunggu 60 detik data real terkumpul.
+        let now = Date()
+        for i in 0..<maxPoints {
+            let t = now.addingTimeInterval(Double(i - maxPoints))
+            let zero = Point(timestamp: t, value: 0)
+            downloadPoints.append(zero)
+            uploadPoints.append(zero)
+        }
+    }
+
     func add(download: Double, upload: Double) {
         let now = Date()
         downloadPoints.append(Point(timestamp: now, value: download))
@@ -153,3 +200,4 @@ private class NetworkSpeedHistory: ObservableObject {
         if uploadPoints.count > maxPoints  { uploadPoints.removeFirst() }
     }
 }
+

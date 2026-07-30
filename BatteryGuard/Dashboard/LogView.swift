@@ -45,9 +45,28 @@ class LogViewModel: ObservableObject {
 
 struct LogView: View {
     @StateObject private var viewModel = LogViewModel()
+    @State private var isAutoScrollEnabled: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
+            // Header
+            HStack {
+                Text("System Logs")
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                
+                Spacer()
+                
+                Toggle("Auto-scroll", isOn: $isAutoScrollEnabled)
+                    .toggleStyle(.switch)
+                    .controlSize(.small)
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .background(Color(NSColor.windowBackgroundColor))
+            
+            Divider()
+
             ScrollViewReader { proxy in
                 ScrollView {
                     Text(viewModel.logs)
@@ -57,7 +76,11 @@ struct LogView: View {
                         .id("LOG_BOTTOM")
                 }
                 .onChange(of: viewModel.logs) { _ in
-                    proxy.scrollTo("LOG_BOTTOM", anchor: .bottom)
+                    if isAutoScrollEnabled {
+                        withAnimation {
+                            proxy.scrollTo("LOG_BOTTOM", anchor: .bottom)
+                        }
+                    }
                 }
             }
             .background(Color(NSColor.textBackgroundColor))
