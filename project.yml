@@ -96,12 +96,16 @@ targets:
       - path: BatteryGuard/Models/BatteryInfo.swift
       - path: BatteryGuard/Models/NetworkStats.swift
       - path: BatteryGuard/Models/RAMStats.swift
+      - path: BatteryGuard/Models/CPUStats.swift
+      - path: BatteryGuard/Models/GPUStats.swift
       - path: BatteryGuard/Models/TemperatureReading.swift
       # Services
       - path: BatteryGuard/Services/BatteryMonitor.swift
       - path: BatteryGuard/Services/RAMMonitor.swift
       - path: BatteryGuard/Services/NetworkSpeedMonitor.swift
       - path: BatteryGuard/Services/TemperatureMonitor.swift
+      - path: BatteryGuard/Services/CPUMonitor.swift
+      - path: BatteryGuard/Services/GPUMonitor.swift
       - path: BatteryGuard/Services/ChargeLimitManager.swift
       - path: BatteryGuard/Services/CycleHistoryStore.swift
       - path: BatteryGuard/Services/LevelHistoryStore.swift

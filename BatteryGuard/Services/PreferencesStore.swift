@@ -51,6 +51,10 @@ final class PreferencesStore: ObservableObject {
     @AppStorage("showRAMUsage") var showRAMUsage: Bool = true
     /// Tampilkan persentase baterai di menu bar
     @AppStorage("showBatteryPercent") var showBatteryPercent: Bool = true
+    /// Tampilkan CPU usage di menu bar
+    @AppStorage("showCPUUsage") var showCPUUsage: Bool = true
+    /// Tampilkan GPU usage di menu bar
+    @AppStorage("showGPUUsage") var showGPUUsage: Bool = true
 
     // MARK: - Polling Intervals
 

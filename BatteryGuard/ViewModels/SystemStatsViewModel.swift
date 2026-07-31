@@ -25,6 +25,8 @@ final class SystemStatsViewModel: ObservableObject {
     @Published var ramStats: RAMStats = .zero
     @Published var networkStats: NetworkStats = .zero
     @Published var temperatures: SystemTemperatures = .empty
+    @Published var cpuStats: CPUStats = .zero
+    @Published var gpuStats: GPUStats = .zero
 
     // MARK: - Charge Limit
 
@@ -80,6 +82,8 @@ final class SystemStatsViewModel: ObservableObject {
     private let ramMonitor: RAMMonitor
     private let networkMonitor: NetworkSpeedMonitor
     private let tempMonitor: TemperatureMonitor
+    private let cpuMonitor: CPUMonitor
+    private let gpuMonitor: GPUMonitor
     let chargeLimitManager: ChargeLimitManager
     let prefs: PreferencesStore
     let cycleHistory: CycleHistoryStore
@@ -95,6 +99,8 @@ final class SystemStatsViewModel: ObservableObject {
         ramMonitor: RAMMonitor = RAMMonitor(),
         networkMonitor: NetworkSpeedMonitor = NetworkSpeedMonitor(),
         tempMonitor: TemperatureMonitor = TemperatureMonitor(),
+        cpuMonitor: CPUMonitor = CPUMonitor(),
+        gpuMonitor: GPUMonitor = GPUMonitor(),
         chargeLimitManager: ChargeLimitManager = ChargeLimitManager(),
         prefs: PreferencesStore = .shared,
         cycleHistory: CycleHistoryStore = .shared
@@ -103,6 +109,8 @@ final class SystemStatsViewModel: ObservableObject {
         self.ramMonitor = ramMonitor
         self.networkMonitor = networkMonitor
         self.tempMonitor = tempMonitor
+        self.cpuMonitor = cpuMonitor
+        self.gpuMonitor = gpuMonitor
         self.chargeLimitManager = chargeLimitManager
         self.prefs = prefs
         self.cycleHistory = cycleHistory
@@ -117,6 +125,8 @@ final class SystemStatsViewModel: ObservableObject {
         batteryMonitor.startMonitoring()
         ramMonitor.startMonitoring()
         networkMonitor.startMonitoring()
+        cpuMonitor.startMonitoring()
+        gpuMonitor.startMonitoring()
 
         // Temperature: selalu start — battery temp tersedia tanpa root via IOKit
         tempMonitor.startMonitoring()
@@ -129,6 +139,8 @@ final class SystemStatsViewModel: ObservableObject {
         ramMonitor.stopMonitoring()
         networkMonitor.stopMonitoring()
         tempMonitor.stopMonitoring()
+        cpuMonitor.stopMonitoring()
+        gpuMonitor.stopMonitoring()
     }
 
     // MARK: - Charge Limit Actions
@@ -186,6 +198,14 @@ final class SystemStatsViewModel: ObservableObject {
         // Temperature
         tempMonitor.$temperatures
             .assign(to: &$temperatures)
+
+        // CPU
+        cpuMonitor.$cpuStats
+            .assign(to: &$cpuStats)
+
+        // GPU
+        gpuMonitor.$gpuStats
+            .assign(to: &$gpuStats)
 
         // Charge limit state
         chargeLimitManager.$state
