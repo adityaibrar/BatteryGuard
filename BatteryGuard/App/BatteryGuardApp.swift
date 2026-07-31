@@ -51,43 +51,43 @@ struct BatteryGuardApp: App {
 
 // MARK: - Menu Bar Label
 
-/// Label di status bar (icon klik untuk buka popover)
-/// Layout compact: [↑↓ speed] [GPU] [RAM] [CPU] [suhu]
-/// Menyerupai iStat Menus style — dense & informative
+/// Label di status bar — single-row compact layout
+/// Format: [↑upload ↓download] [GPU xx%] [RAM xx%] [CPU xx%] [xx°]
 private struct MenuBarLabel: View {
     @ObservedObject var viewModel: SystemStatsViewModel
     @ObservedObject var prefs: PreferencesStore
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 5) {
 
-            // MARK: Network Speed (stacked 2 baris)
+            // MARK: Network Speed — 2 baris stacked, font sangat kecil
             if prefs.showNetworkSpeed {
-                VStack(alignment: .trailing, spacing: 0) {
-                    // Upload row
-                    HStack(spacing: 2) {
-                        Image(systemName: "arrow.up")
-                            .font(.system(size: 7, weight: .bold))
+                VStack(alignment: .leading, spacing: -1) {
+                    // Upload
+                    HStack(spacing: 1) {
+                        Text("↑")
+                            .font(.system(size: 7.5, weight: .bold))
                             .foregroundStyle(.green)
-                        Text(viewModel.networkStats.uploadFormatted)
-                            .font(.system(size: 9, weight: .medium, design: .monospaced))
+                        Text(compactSpeed(viewModel.networkStats.uploadBytesPerSec))
+                            .font(.system(size: 8.5, weight: .medium, design: .monospaced))
                             .monospacedDigit()
                     }
-                    // Download row
-                    HStack(spacing: 2) {
-                        Image(systemName: "arrow.down")
-                            .font(.system(size: 7, weight: .bold))
+                    // Download
+                    HStack(spacing: 1) {
+                        Text("↓")
+                            .font(.system(size: 7.5, weight: .bold))
                             .foregroundStyle(.blue)
-                        Text(viewModel.networkStats.downloadFormatted)
-                            .font(.system(size: 9, weight: .medium, design: .monospaced))
+                        Text(compactSpeed(viewModel.networkStats.downloadBytesPerSec))
+                            .font(.system(size: 8.5, weight: .medium, design: .monospaced))
                             .monospacedDigit()
                     }
                 }
+                .frame(height: 22)
             }
 
             // MARK: GPU %
             if prefs.showGPUUsage {
-                CompactMetricChip(
+                MetricLabel(
                     label: "GPU",
                     value: viewModel.gpuStats.shortFormatted,
                     color: gpuColor
@@ -96,7 +96,7 @@ private struct MenuBarLabel: View {
 
             // MARK: RAM %
             if prefs.showRAMUsage {
-                CompactMetricChip(
+                MetricLabel(
                     label: "RAM",
                     value: String(format: "%.0f%%", viewModel.ramStats.usagePercent),
                     color: ramColor
@@ -105,7 +105,7 @@ private struct MenuBarLabel: View {
 
             // MARK: CPU %
             if prefs.showCPUUsage {
-                CompactMetricChip(
+                MetricLabel(
                     label: "CPU",
                     value: viewModel.cpuStats.shortFormatted,
                     color: cpuColor
@@ -114,15 +114,32 @@ private struct MenuBarLabel: View {
 
             // MARK: Suhu
             if prefs.showTemperature {
-                let temp = viewModel.temperatures.cpuTemperature ?? viewModel.temperatures.batteryTemperature
+                let temp = viewModel.temperatures.cpuTemperature
+                    ?? viewModel.temperatures.batteryTemperature
                 if let temp {
                     Text(temp.shortFormatted)
-                        .font(.system(size: 11, weight: .medium, design: .monospaced))
+                        .font(.system(size: 11, weight: .semibold, design: .monospaced))
                         .foregroundStyle(tempColor(temp.celsius))
                         .monospacedDigit()
                 }
             }
         }
+        // Pastikan HStack tidak di-clip oleh menu bar
+        .fixedSize()
+    }
+
+    // MARK: - Format Helpers
+
+    /// Format kecepatan compact: "352K", "1.2M", "0" — tanpa satuan panjang
+    private func compactSpeed(_ bytesPerSec: Double) -> String {
+        if bytesPerSec >= 1_000_000 {
+            return String(format: "%.1fM", bytesPerSec / 1_000_000)
+        } else if bytesPerSec >= 1_000 {
+            return String(format: "%.0fK", bytesPerSec / 1_000)
+        } else if bytesPerSec > 0 {
+            return String(format: "%.0fB", bytesPerSec)
+        }
+        return "0K"
     }
 
     // MARK: - Color Helpers
@@ -161,11 +178,11 @@ private struct MenuBarLabel: View {
     }
 }
 
-// MARK: - CompactMetricChip
+// MARK: - MetricLabel
 
-/// Chip kecil untuk satu metrik: [LABEL] [nilai]
+/// Label metrik: [NAMA kecil abu] [nilai putih bold]
 /// Contoh: "GPU 44%", "RAM 61%", "CPU 17%"
-private struct CompactMetricChip: View {
+private struct MetricLabel: View {
     let label: String
     let value: String
     var color: Color = .primary
@@ -173,7 +190,7 @@ private struct CompactMetricChip: View {
     var body: some View {
         HStack(spacing: 2) {
             Text(label)
-                .font(.system(size: 8, weight: .semibold))
+                .font(.system(size: 8, weight: .bold))
                 .foregroundStyle(.secondary)
             Text(value)
                 .font(.system(size: 11, weight: .semibold, design: .monospaced))
@@ -182,4 +199,5 @@ private struct CompactMetricChip: View {
         }
     }
 }
+
 
