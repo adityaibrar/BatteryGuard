@@ -62,27 +62,27 @@ private struct MenuBarLabel: View {
 
             // MARK: Network Speed — 2 baris stacked, font sangat kecil
             if prefs.showNetworkSpeed {
-                VStack(alignment: .leading, spacing: -1) {
+                VStack(alignment: .trailing, spacing: 0) {
                     // Upload
-                    HStack(spacing: 1) {
+                    HStack(spacing: 2) {
                         Text("↑")
                             .font(.system(size: 7.5, weight: .bold))
                             .foregroundStyle(.green)
                         Text(compactSpeed(viewModel.networkStats.uploadBytesPerSec))
-                            .font(.system(size: 8.5, weight: .medium, design: .monospaced))
+                            .font(.system(size: 9, weight: .medium, design: .monospaced))
                             .monospacedDigit()
                     }
                     // Download
-                    HStack(spacing: 1) {
+                    HStack(spacing: 2) {
                         Text("↓")
                             .font(.system(size: 7.5, weight: .bold))
                             .foregroundStyle(.blue)
                         Text(compactSpeed(viewModel.networkStats.downloadBytesPerSec))
-                            .font(.system(size: 8.5, weight: .medium, design: .monospaced))
+                            .font(.system(size: 9, weight: .medium, design: .monospaced))
                             .monospacedDigit()
                     }
                 }
-                .frame(height: 22)
+                .fixedSize()
             }
 
             // MARK: GPU %
