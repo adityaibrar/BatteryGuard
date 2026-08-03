@@ -70,6 +70,7 @@ targets:
       # App entry
       - path: BatteryGuard/App/BatteryGuardApp.swift
       - path: BatteryGuard/App/AppDelegate.swift
+      - path: BatteryGuard/App/MenuBarAppKitLabel.swift
       # Menu Bar
       - path: BatteryGuard/MenuBar/MenuBarView.swift
       - path: BatteryGuard/MenuBar/StatusBarMetricView.swift

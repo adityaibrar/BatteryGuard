@@ -2,6 +2,11 @@
 // BatteryGuard — Application lifecycle + NSStatusItem (AppKit)
 // Menggunakan NSStatusItem langsung agar bisa render 2-baris layout
 // yang tidak bisa dilakukan oleh SwiftUI MenuBarExtra label.
+//
+// OPTIMASI CPU (ditambahkan):
+// - removeDuplicates() di semua Combine pipeline (SystemStatsViewModel)
+// - Custom Equatable (ignore timestamp) di semua stat model
+// → SwiftUI hanya re-render saat data benar-benar berubah signifikan
 
 import AppKit
 import SwiftUI
@@ -15,8 +20,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Shared State
     // Di-init di sini agar bisa dipakai oleh NSStatusItem + SwiftUI scenes
 
-    let viewModel     = SystemStatsViewModel()
-    let prefs         = PreferencesStore.shared
+    let viewModel       = SystemStatsViewModel() // startAll() otomatis dipanggil di init()
+    let prefs           = PreferencesStore.shared
     let helperInstaller = HelperInstaller()
 
     // MARK: - Status Bar (AppKit)
@@ -27,8 +32,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Lifecycle
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        helperInstaller.checkStatus()
         setupStatusItem()
-        checkAndInstallHelper()
         setupSystemNotifications()
     }
 
@@ -56,10 +61,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // 2. Buat SwiftUI view untuk label — 2-baris compact
         let labelView = MenuBarStatusLabel(viewModel: viewModel, prefs: prefs)
         let hosting   = NSHostingView(rootView: labelView)
+        // PENTING: gunakan Auto Layout, BUKAN frame + autoresizingMask
+        // (button.bounds saat setup masih .zero karena belum di-layout)
         hosting.translatesAutoresizingMaskIntoConstraints = false
 
         // 3. Embed hosting view di dalam button status item
-        //    Button handle klik via target/action (cara modern, non-deprecated)
         guard let button = statusItem?.button else { return }
         button.target = self
         button.action = #selector(handleStatusClick)
@@ -106,11 +112,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func checkAndInstallHelper() {
         let service = SMAppService.daemon(plistName: "com.ibrardev.BatteryGuard.Helper.plist")
         switch service.status {
-        case .enabled:       break
+        case .enabled:          break
         case .requiresApproval: showHelperApprovalNotification()
-        case .notFound:      break
-        case .notRegistered: break
-        @unknown default:    break
+        case .notFound:         break
+        case .notRegistered:    break
+        @unknown default:       break
         }
     }
 
@@ -130,7 +136,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc private func handlePowerChange(_ notification: Notification) {
-        // Re-apply charge limit setelah wake dari sleep
+        // Re-check limit setelah wake dari sleep
     }
 
     // MARK: - Window Management
@@ -146,10 +152,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 }
 
-// MARK: - MenuBarStatusLabel
-// SwiftUI view untuk label NSStatusItem — layout 2 baris stacked
+// MARK: - MenuBarStatusLabel (SwiftUI)
+//
+// 2-baris compact layout untuk menu bar.
+// OPTIMASI: berkat removeDuplicates() di Combine pipeline dan custom Equatable
+// yang mengabaikan timestamp, view ini HANYA di-render ulang saat data berubah
+// secara signifikan (bukan setiap timer tick).
 
 struct MenuBarStatusLabel: View {
+
     @ObservedObject var viewModel: SystemStatsViewModel
     @ObservedObject var prefs: PreferencesStore
 
@@ -157,7 +168,7 @@ struct MenuBarStatusLabel: View {
         // spacing 10 agar tiap item tidak berdempetan
         HStack(spacing: 10) {
 
-            // Network Speed — kolom fixed 58pt supaya nilai yg berubah
+            // Network Speed — kolom fixed 72pt supaya nilai yg berubah
             // tidak menggeser item lain (monospaced font membantu stabilitas)
             if prefs.showNetworkSpeed {
                 VStack(alignment: .trailing, spacing: 0) {

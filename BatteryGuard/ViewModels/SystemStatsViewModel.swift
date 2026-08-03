@@ -159,7 +159,9 @@ final class SystemStatsViewModel: ObservableObject {
 
     private func setupBindings() {
         // Battery status → update chargeLimitReached
+        // removeDuplicates() memastikan SwiftUI hanya re-render saat nilai benar-benar berubah
         batteryMonitor.$status
+            .removeDuplicates()
             .sink { [weak self] status in
                 guard let self = self else { return }
                 var updatedStatus = status
@@ -176,42 +178,53 @@ final class SystemStatsViewModel: ObservableObject {
             .store(in: &cancellables)
 
         batteryMonitor.$specs
+            .removeDuplicates()
             .assign(to: &$batterySpecs)
 
         batteryMonitor.$health
+            .removeDuplicates()
             .assign(to: &$batteryHealth)
 
         batteryMonitor.$adapterInfo
+            .removeDuplicates()
             .assign(to: &$adapterInfo)
 
         batteryMonitor.$powerFlow
+            .removeDuplicates()
             .assign(to: &$powerFlow)
 
-        // RAM
+        // RAM — update hanya jika beda > 50 MB
         ramMonitor.$ramStats
+            .removeDuplicates()
             .assign(to: &$ramStats)
 
-        // Network
+        // Network — update hanya jika beda > 50 KB/s
         networkMonitor.$networkStats
+            .removeDuplicates()
             .assign(to: &$networkStats)
 
-        // Temperature
+        // Temperature — update hanya jika beda > 0.5°C
         tempMonitor.$temperatures
+            .removeDuplicates()
             .assign(to: &$temperatures)
 
-        // CPU
+        // CPU — update hanya jika beda > 1%
         cpuMonitor.$cpuStats
+            .removeDuplicates()
             .assign(to: &$cpuStats)
 
-        // GPU
+        // GPU — update hanya jika beda > 1%
         gpuMonitor.$gpuStats
+            .removeDuplicates()
             .assign(to: &$gpuStats)
 
         // Charge limit state
         chargeLimitManager.$state
+            .removeDuplicates()
             .assign(to: &$chargeLimitState)
 
         chargeLimitManager.$isApplying
+            .removeDuplicates()
             .assign(to: &$isApplyingLimit)
 
         chargeLimitManager.$lastError

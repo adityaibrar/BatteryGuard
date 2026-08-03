@@ -16,15 +16,12 @@ struct BatteryStatus: Equatable {
     var isPluggedIn: Bool
     /// True jika baterai sudah mencapai charge limit yang di-set user
     var chargeLimitReached: Bool
-    /// Timestamp terakhir update
-    var lastUpdated: Date
 
     static let placeholder = BatteryStatus(
         percentage: 0,
         isCharging: false,
         isPluggedIn: false,
-        chargeLimitReached: false,
-        lastUpdated: .distantPast
+        chargeLimitReached: false
     )
 }
 

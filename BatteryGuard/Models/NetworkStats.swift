@@ -13,8 +13,15 @@ struct NetworkStats: Equatable {
     var uploadBytesPerSec: Double
     /// Nama interface aktif yang dipakai (misal "en0")
     var primaryInterface: String
-    /// Timestamp polling
+    /// Timestamp polling (tidak diikutkan dalam perbandingan Equatable)
     var timestamp: Date
+
+    /// Dua NetworkStats dianggap sama jika kecepatan beda kurang dari 50 KB/s
+    /// Timestamp diabaikan — menghindari re-render SwiftUI yang tidak perlu
+    static func == (lhs: NetworkStats, rhs: NetworkStats) -> Bool {
+        abs(lhs.downloadBytesPerSec - rhs.downloadBytesPerSec) < 50_000 &&
+        abs(lhs.uploadBytesPerSec   - rhs.uploadBytesPerSec)   < 50_000
+    }
 
     /// Download dalam format human-readable (KB/s, MB/s)
     var downloadFormatted: String { formatSpeed(downloadBytesPerSec) }

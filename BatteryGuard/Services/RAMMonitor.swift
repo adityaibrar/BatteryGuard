@@ -1,6 +1,11 @@
 // RAMMonitor.swift
 // BatteryGuard — Monitor penggunaan RAM via Mach API
 // Formula cocok dengan Activity Monitor macOS
+//
+// Optimasi CPU usage:
+// - Gunakan DispatchSourceTimer di background queue (bukan Timer di main RunLoop)
+// - Interval dinaikkan 1s → 3s (RAM tidak berfluktuasi cepat)
+// - host_statistics64() tidak perlu dipanggil lebih dari setiap 3 detik
 
 import Foundation
 
@@ -21,34 +26,47 @@ final class RAMMonitor: ObservableObject {
 
     // MARK: - Private
 
-    private var timer: Timer?
+    /// DispatchSourceTimer berjalan di background queue — tidak memblokir main thread
+    private var timerSource: DispatchSourceTimer?
+    private let queue = DispatchQueue(label: "com.batteryguard.ram-monitor", qos: .utility)
     private let pollingInterval: TimeInterval
     private let hostPort = mach_host_self()
 
     // MARK: - Init
 
-    init(pollingInterval: TimeInterval = 1.0) {
+    init(pollingInterval: TimeInterval = 3.0) {
         self.pollingInterval = pollingInterval
     }
 
     // MARK: - Lifecycle
 
     func startMonitoring() {
-        // Baca langsung saat start
-        readMemoryStats()
-
-        timer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { [weak self] _ in
+        // Baca langsung saat start (di background)
+        queue.async { [weak self] in
             self?.readMemoryStats()
         }
-        RunLoop.main.add(timer!, forMode: .common)
+
+        // Setup DispatchSourceTimer di background queue
+        let source = DispatchSource.makeTimerSource(queue: queue)
+        source.schedule(
+            deadline: .now() + pollingInterval,
+            repeating: pollingInterval,
+            leeway: .milliseconds(300) // toleransi ±300ms
+        )
+        source.setEventHandler { [weak self] in
+            self?.readMemoryStats()
+        }
+        source.resume()
+        timerSource = source
     }
 
     func stopMonitoring() {
-        timer?.invalidate()
-        timer = nil
+        timerSource?.cancel()
+        timerSource = nil
     }
 
     // MARK: - Memory Reading
+    // Dipanggil dari background queue — aman untuk Mach calls
 
     /// Baca vm_statistics64 dari Mach kernel
     private func readMemoryStats() {

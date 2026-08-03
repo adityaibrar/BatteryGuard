@@ -12,6 +12,7 @@
 		103B58C16037BD5EF2234A53 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99273F6EB7E2C422E82B5AD6 /* DashboardView.swift */; };
 		2A155D94683D7F7BA586D549 /* NetworkStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E82F359FC34D0C26E1DDC96 /* NetworkStats.swift */; };
 		2A8A23C5165669E8A56B9639 /* RAMMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F864525358511A49F022C6FF /* RAMMonitor.swift */; };
+		2FC5AFE6DC18EC488AD180D8 /* MenuBarAppKitLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC819F5C1FD66E28CB8CCBCE /* MenuBarAppKitLabel.swift */; };
 		351AFBBCC9B8510DD2BAADFE /* LevelHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 432BE2A6008F2F6397A2C6D1 /* LevelHistoryStore.swift */; };
 		38F5DADF8A5043588E0E6548 /* BatteryGuardXPCProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F46CCC0C2677862C1064594 /* BatteryGuardXPCProtocol.swift */; };
 		3E570C0CF6A18530088DF441 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20B119B61AB05B713149EAB3 /* MenuBarView.swift */; };
@@ -102,6 +103,7 @@
 		B2FD5C87FCAF913A6A46F3C4 /* EnergyAppsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnergyAppsCard.swift; sourceTree = "<group>"; };
 		B63139E80C48CF657E75E26D /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 		BB9AA867DF6A5376B248108B /* HelperTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperTool.swift; sourceTree = "<group>"; };
+		BC819F5C1FD66E28CB8CCBCE /* MenuBarAppKitLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarAppKitLabel.swift; sourceTree = "<group>"; };
 		C2DE2C9237583B062101A1DC /* BatteryGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45773CCE62E7AC495A201E6 /* NetworkSpeedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSpeedCard.swift; sourceTree = "<group>"; };
 		CA6A84E99778A9D8E275ACE3 /* TemperatureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureMonitor.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 			children = (
 				6DE912535073912B41FC0B0C /* AppDelegate.swift */,
 				7098A58372EF241EB86B662C /* BatteryGuardApp.swift */,
+				BC819F5C1FD66E28CB8CCBCE /* MenuBarAppKitLabel.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -458,6 +461,7 @@
 				63226D002F330E78C04E965A /* HelperConnection.swift in Sources */,
 				351AFBBCC9B8510DD2BAADFE /* LevelHistoryStore.swift in Sources */,
 				A86EBA55F846264FB51D6073 /* LogView.swift in Sources */,
+				2FC5AFE6DC18EC488AD180D8 /* MenuBarAppKitLabel.swift in Sources */,
 				3E570C0CF6A18530088DF441 /* MenuBarView.swift in Sources */,
 				503A5ED1823F021F381134AA /* NetworkSpeedCard.swift in Sources */,
 				9F39EB2CC584CA3AB25412BE /* NetworkSpeedMonitor.swift in Sources */,

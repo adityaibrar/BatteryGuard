@@ -21,8 +21,14 @@ struct RAMStats: Equatable {
     var speculativeBytes: UInt64
     /// Free Memory — benar-benar kosong (bytes)
     var freeBytes: UInt64
-    /// Timestamp polling
+    /// Timestamp polling (tidak diikutkan dalam perbandingan Equatable)
     var timestamp: Date
+
+    /// Dua RAMStats dianggap sama jika Used Memory-nya beda kurang dari 50 MB
+    /// Timestamp diabaikan — menghindari re-render SwiftUI yang tidak perlu
+    static func == (lhs: RAMStats, rhs: RAMStats) -> Bool {
+        abs(Int64(bitPattern: lhs.usedBytes) - Int64(bitPattern: rhs.usedBytes)) < 50_000_000
+    }
 
     // MARK: - Computed Properties (Activity Monitor formula)
 

@@ -10,6 +10,10 @@
 // - En1/En2 (Thunderbolt bridge) diexclude — IFF_RUNNING tapi tidak punya IP
 // - anpi0/anpi1, awdl0, llw0, ap1 juga diexclude dengan cara yang sama
 // - utun* (VPN) diinclude hanya jika aktif dengan IP
+//
+// Optimasi CPU usage:
+// - Gunakan DispatchSourceTimer di background queue (bukan Timer di main RunLoop)
+// - Interval dinaikkan 1s → 2s (cukup untuk indikasi traffic, jauh lebih hemat)
 
 import Foundation
 import Darwin
@@ -26,45 +30,57 @@ final class NetworkSpeedMonitor: ObservableObject {
 
     // MARK: - Private
 
-    private var timer: Timer?
+    /// DispatchSourceTimer berjalan di background queue — tidak memblokir main thread
+    private var timerSource: DispatchSourceTimer?
+    private let queue = DispatchQueue(label: "com.batteryguard.network-monitor", qos: .utility)
     private let pollingInterval: TimeInterval
     /// Snapshot sebelumnya untuk menghitung delta
     private var previousSnapshot: [NetworkInterfaceSnapshot] = []
 
     // MARK: - Init
 
-    init(pollingInterval: TimeInterval = 1.0) {
+    init(pollingInterval: TimeInterval = 2.0) {
         self.pollingInterval = pollingInterval
     }
 
     // MARK: - Lifecycle
 
     func startMonitoring() {
-        // Ambil snapshot awal (tanpa hitung speed dulu)
-        previousSnapshot = getCurrentSnapshot()
+        // Ambil snapshot awal di background (tanpa hitung speed dulu)
+        queue.async { [weak self] in
+            self?.previousSnapshot = self?.getCurrentSnapshot() ?? []
+        }
 
-        // Start timer — hitung delta dari snapshot kedua dst.
-        timer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { [weak self] _ in
+        // Setup DispatchSourceTimer di background queue
+        let source = DispatchSource.makeTimerSource(queue: queue)
+        source.schedule(
+            deadline: .now() + pollingInterval,
+            repeating: pollingInterval,
+            leeway: .milliseconds(200) // toleransi ±200ms
+        )
+        source.setEventHandler { [weak self] in
             self?.updateNetworkSpeed()
         }
-        RunLoop.main.add(timer!, forMode: .common)
+        source.resume()
+        timerSource = source
     }
 
     func stopMonitoring() {
-        timer?.invalidate()
-        timer = nil
+        timerSource?.cancel()
+        timerSource = nil
         previousSnapshot = []
     }
 
     // MARK: - Speed Calculation
+    // Dipanggil dari background queue — aman untuk getifaddrs() calls
 
     private func updateNetworkSpeed() {
         let currentSnapshot = getCurrentSnapshot()
         let now = Date()
 
         var totalDownload: Double = 0
-        var totalUpload: Double = 0
-        var primaryInterface = "—"
+        var totalUpload: Double   = 0
+        var primaryInterface      = "—"
 
         for current in currentSnapshot {
             if let previous = previousSnapshot.first(where: { $0.name == current.name }) {
@@ -135,7 +151,7 @@ final class NetworkSpeedMonitor: ObservableObject {
             // Hanya interface dengan IPv4 atau IPv6 address nyata
             if family == UInt8(AF_INET) || family == UInt8(AF_INET6) {
                 // Skip loopback (127.x, ::1)
-                let flags = Int32(iface.ifa_flags)
+                let flags      = Int32(iface.ifa_flags)
                 let isLoopback = (flags & IFF_LOOPBACK) != 0
                 if !isLoopback {
                     activeInterfaces.insert(name)
@@ -187,9 +203,9 @@ final class NetworkSpeedMonitor: ObservableObject {
 
     /// Konversi nama interface ke label yang mudah dibaca
     private func friendlyName(_ name: String) -> String {
-        if name == "—" { return "—" }
-        if name.hasPrefix("en0") { return "Wi-Fi" }
-        if name.hasPrefix("en")  { return "Ethernet" }
+        if name == "—"  { return "—" }
+        if name.hasPrefix("en0")  { return "Wi-Fi" }
+        if name.hasPrefix("en")   { return "Ethernet" }
         if name.hasPrefix("utun") || name.hasPrefix("ipsec") { return "VPN" }
         if name.hasPrefix("ppp")  { return "PPP" }
         return name
