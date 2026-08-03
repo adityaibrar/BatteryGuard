@@ -70,6 +70,13 @@ final class PreferencesStore: ObservableObject {
     /// Tema aplikasi: "system", "light", "dark"
     @AppStorage("colorScheme") var colorScheme: String = "system"
 
+    // MARK: - Mouse Natural Scrolling
+
+    /// Master toggle: pisahkan scroll direction mouse (normal) vs trackpad (natural)
+    /// Menggunakan CGEventTap — tidak mengubah System Settings apapun.
+    /// Default false: user harus opt-in secara sadar (perlu Accessibility permission)
+    @AppStorage("mouseAutoScrollEnabled") var mouseAutoScrollEnabled: Bool = false
+
     // MARK: - Calibration
 
     /// Timestamp kalibrasi terakhir

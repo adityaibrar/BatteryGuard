@@ -1,12 +1,15 @@
 // SettingsView.swift
 // BatteryGuard — Preferences panel (dibuka via Cmd+, atau gear icon)
+// Update: tambah tab Mouse untuk fitur Natural Scrolling Auto-Toggle
 
 import SwiftUI
+import Combine
 
 struct SettingsView: View {
     @EnvironmentObject var prefs: PreferencesStore
     @EnvironmentObject var helperInstaller: HelperInstaller
     @EnvironmentObject var viewModel: SystemStatsViewModel
+    @ObservedObject private var mouseService = MouseScrollService.shared
 
     var body: some View {
         TabView {
@@ -22,6 +25,12 @@ struct SettingsView: View {
                     Label("Menu Bar", systemImage: "menubar.rectangle")
                 }
 
+            // MARK: Mouse
+            MouseSettingsTab()
+                .tabItem {
+                    Label("Mouse", systemImage: "computermouse")
+                }
+
             // MARK: Helper
             HelperSettingsTab()
                 .tabItem {
@@ -35,7 +44,7 @@ struct SettingsView: View {
                 }
         }
         .padding(20)
-        .frame(width: 480, height: 360)
+        .frame(width: 480, height: 380)
         .environmentObject(prefs)
         .environmentObject(helperInstaller)
     }
@@ -146,6 +155,106 @@ private struct MenuBarSettingsTab: View {
             }
         }
         .formStyle(.grouped)
+    }
+}
+
+// MARK: - Mouse Settings Tab
+
+private struct MouseSettingsTab: View {
+    @EnvironmentObject var prefs: PreferencesStore
+    @ObservedObject private var mouseService = MouseScrollService.shared
+
+    var body: some View {
+        Form {
+            // MARK: Master Toggle
+            Section("Pisahkan Scroll Mouse & Trackpad") {
+                Toggle("Aktifkan", isOn: $prefs.mouseAutoScrollEnabled)
+                    .onChange(of: prefs.mouseAutoScrollEnabled) { enabled in
+                        // userInitiated: true → otomatis prompt permission jika belum ada
+                        if enabled { mouseService.start(userInitiated: true) }
+                        else       { mouseService.stop() }
+                    }
+
+                Text("Saat aktif: scroll wheel mouse menggunakan arah normal (tidak natural), sedangkan trackpad tetap menggunakan natural scrolling. System Settings tidak diubah sama sekali.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            // MARK: Accessibility Permission
+            Section("Accessibility Permission") {
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(mouseService.hasAccessibilityPermission ? Color.green : Color.orange)
+                        .frame(width: 8, height: 8)
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(mouseService.hasAccessibilityPermission
+                             ? "Permission aktif"
+                             : "Permission diperlukan")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+
+                        if !mouseService.hasAccessibilityPermission {
+                            Text("System Settings → Privacy & Security → Accessibility")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Spacer()
+
+                    if !mouseService.hasAccessibilityPermission {
+                        Button("Buka Settings") {
+                            mouseService.requestAccessibilityPermission()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+            .disabled(!prefs.mouseAutoScrollEnabled)
+
+            // MARK: Status Event Tap
+            Section("Status") {
+                HStack(spacing: 10) {
+                    Circle()
+                        .fill(mouseService.isActive ? Color.green : Color.secondary.opacity(0.4))
+                        .frame(width: 8, height: 8)
+
+                    Text(mouseService.isActive
+                         ? "Aktif — mouse scroll dibalik, trackpad tetap natural"
+                         : statusDescription)
+                        .font(.subheadline)
+                        .foregroundStyle(mouseService.isActive ? .primary : .secondary)
+
+                    Spacer()
+                }
+                .padding(.vertical, 2)
+
+                // Tampilkan tombol retry jika toggle ON tapi tap belum aktif
+                if prefs.mouseAutoScrollEnabled && !mouseService.isActive && mouseService.hasAccessibilityPermission {
+                    Button("Aktifkan Sekarang") {
+                        mouseService.start(userInitiated: true)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                }
+            }
+            .disabled(!prefs.mouseAutoScrollEnabled)
+        }
+        .formStyle(.grouped)
+        .onAppear {
+            // Re-cek permission setiap kali tab dibuka (user mungkin baru grant dari Settings)
+            mouseService.refreshPermissionStatus()
+        }
+    }
+
+    private var statusDescription: String {
+        if !prefs.mouseAutoScrollEnabled { return "Toggle dimatikan" }
+        if !mouseService.hasAccessibilityPermission { return "Menunggu Accessibility permission" }
+        return "Tidak aktif"
     }
 }
 

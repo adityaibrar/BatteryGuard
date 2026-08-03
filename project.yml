@@ -111,6 +111,7 @@ targets:
       - path: BatteryGuard/Services/CycleHistoryStore.swift
       - path: BatteryGuard/Services/LevelHistoryStore.swift
       - path: BatteryGuard/Services/PreferencesStore.swift
+      - path: BatteryGuard/Services/MouseScrollService.swift
       # XPC client
       - path: BatteryGuard/XPC/HelperConnection.swift
       # ViewModel

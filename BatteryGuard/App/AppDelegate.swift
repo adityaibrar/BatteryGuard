@@ -23,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let viewModel       = SystemStatsViewModel() // startAll() otomatis dipanggil di init()
     let prefs           = PreferencesStore.shared
     let helperInstaller = HelperInstaller()
+    let mouseScroll     = MouseScrollService.shared
 
     // MARK: - Status Bar (AppKit)
 
@@ -35,9 +36,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         helperInstaller.checkStatus()
         setupStatusItem()
         setupSystemNotifications()
+        // One-shot check: deteksi mouse & terapkan natural scroll setting
+        mouseScroll.start()
     }
 
     func applicationWillTerminate(_ notification: Notification) {
+        // Hentikan event tap saat app quit
+        mouseScroll.stop()
         // Helper daemon tetap berjalan setelah app quit (by design)
     }
 
