@@ -57,6 +57,9 @@ struct DashboardView: View {
                 .frame(maxWidth: 500)
         case .log:
             LogView()
+        case .uninstaller:
+            UninstallerView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 

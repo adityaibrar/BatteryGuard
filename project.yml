@@ -93,6 +93,8 @@ targets:
       - path: BatteryGuard/Dashboard/Cards/NetworkSpeedCard.swift
       # Settings
       - path: BatteryGuard/Settings/SettingsView.swift
+      # Uninstaller
+      - path: BatteryGuard/Uninstaller/UninstallerView.swift
       # Models
       - path: BatteryGuard/Models/BatteryInfo.swift
       - path: BatteryGuard/Models/NetworkStats.swift
@@ -100,6 +102,7 @@ targets:
       - path: BatteryGuard/Models/CPUStats.swift
       - path: BatteryGuard/Models/GPUStats.swift
       - path: BatteryGuard/Models/TemperatureReading.swift
+      - path: BatteryGuard/Models/UninstallerModels.swift
       # Services
       - path: BatteryGuard/Services/BatteryMonitor.swift
       - path: BatteryGuard/Services/RAMMonitor.swift
@@ -112,10 +115,12 @@ targets:
       - path: BatteryGuard/Services/LevelHistoryStore.swift
       - path: BatteryGuard/Services/PreferencesStore.swift
       - path: BatteryGuard/Services/MouseScrollService.swift
+      - path: BatteryGuard/Services/UninstallerService.swift
       # XPC client
       - path: BatteryGuard/XPC/HelperConnection.swift
       # ViewModel
       - path: BatteryGuard/ViewModels/SystemStatsViewModel.swift
+      - path: BatteryGuard/ViewModels/UninstallerViewModel.swift
 
     # Helper dependencies & copying
     dependencies:

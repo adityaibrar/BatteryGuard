@@ -37,6 +37,12 @@ struct SettingsView: View {
                     Label("Helper", systemImage: "wrench.and.screwdriver")
                 }
 
+            // MARK: Uninstaller
+            UninstallerView()
+                .tabItem {
+                    Label("Uninstaller", systemImage: "trash")
+                }
+
             // MARK: About
             AboutTab()
                 .tabItem {
@@ -44,7 +50,7 @@ struct SettingsView: View {
                 }
         }
         .padding(20)
-        .frame(width: 480, height: 380)
+        .frame(width: 580, height: 460)
         .environmentObject(prefs)
         .environmentObject(helperInstaller)
     }

@@ -12,6 +12,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
     case chargeControl = "Charge Control"
     case energyUse = "Energy Use"
     case log = "Log"
+    case uninstaller = "Uninstaller"
 
     var icon: String {
         switch self {
@@ -19,6 +20,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .chargeControl:  return "bolt.badge.clock"
         case .energyUse:      return "bolt.fill"
         case .log:            return "terminal"
+        case .uninstaller:    return "trash"
         }
     }
 
@@ -28,6 +30,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .chargeControl:  return .green
         case .energyUse:      return .orange
         case .log:            return .purple
+        case .uninstaller:    return .red
         }
     }
 }
