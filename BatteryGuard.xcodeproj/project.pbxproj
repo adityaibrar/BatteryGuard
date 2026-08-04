@@ -22,11 +22,6 @@
 		4368DA7F873E6E4F1E5D7572 /* VolumeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C40908C94B58572EDF8C1FC /* VolumeApp.swift */; };
 		503A5ED1823F021F381134AA /* NetworkSpeedCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C45773CCE62E7AC495A201E6 /* NetworkSpeedCard.swift */; };
 		511CEB780DAD1D28045B8078 /* VolumeMixerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2618F6D6B57F5482A06DCDC /* VolumeMixerService.swift */; };
-		F1A2B3C4D5E60001AABBCCDD /* TapGainEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60002AABBCCDD /* TapGainEngine.swift */; };
-		F1A2B3C4D5E60003AABBCCDD /* ResponsibleProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60004AABBCCDD /* ResponsibleProcess.swift */; };
-		F1A2B3C4D5E60005AABBCCDD /* BoostLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60006AABBCCDD /* BoostLimiter.swift */; };
-		F1A2B3C4D5E60007AABBCCDD /* MixerRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60008AABBCCDD /* MixerRender.swift */; };
-		F1A2B3C4D5E60009AABBCCDD /* MixerRoutingSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60010AABBCCDD /* MixerRoutingSupport.swift */; };
 		5B55E8DBB99EDAA19CFE59CA /* HelperTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB9AA867DF6A5376B248108B /* HelperTool.swift */; };
 		5EDD39FA7D1930F624EAF4E0 /* CycleHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E77D53F6EC11625AAF9815F /* CycleHistoryStore.swift */; };
 		624954646A565A5796B27CD3 /* UninstallerService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1B924217E490AFE7DECBDF /* UninstallerService.swift */; };
@@ -37,7 +32,7 @@
 		7EFFD61CCCE8C69BD6EA248E /* DashboardCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D30BE0FB3D2D1BC98AED1CA1 /* DashboardCardView.swift */; };
 		856FFED802BB9D58C571EFD8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DE912535073912B41FC0B0C /* AppDelegate.swift */; };
 		858416BCE096577CCF84DD1C /* ChargeLimitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B9989DF0A2DDA8C6C692A94 /* ChargeLimitManager.swift */; };
-		8CC61B294DC1F8EFC9EAF6B8 /* BatteryGuardHelper in Resources */ = {isa = PBXBuildFile; fileRef = 2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8CC61B294DC1F8EFC9EAF6B8 /* com.ibrardev.BatteryGuard.Helper in Resources */ = {isa = PBXBuildFile; fileRef = 2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8FD349EE18815F6EC19C1543 /* BatteryGuardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7098A58372EF241EB86B662C /* BatteryGuardApp.swift */; };
 		917A42193FFA64A86F351ED9 /* BatteryCyclesCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BDD43B78B546DAF59498F6A /* BatteryCyclesCard.swift */; };
 		9CCA169408310DED21D2587F /* BatteryLevelCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F36421B0C90B6F0B98B069E /* BatteryLevelCard.swift */; };
@@ -65,6 +60,11 @@
 		ED7D1FF8FDAE6651D9B4E6CB /* VolumeMixerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28813659A17CC4CDA5047AF7 /* VolumeMixerView.swift */; };
 		ED858F7F0A39793428ED8592 /* BatterySpecsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FB0672F40C426BB3046D10 /* BatterySpecsCard.swift */; };
 		F033DBFD429C93C6AA7E6CC6 /* MouseScrollService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1D1A77E1CDC6C38BC820BE /* MouseScrollService.swift */; };
+		F1A2B3C4D5E60001AABBCCDD /* TapGainEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60002AABBCCDD /* TapGainEngine.swift */; };
+		F1A2B3C4D5E60003AABBCCDD /* ResponsibleProcess.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60004AABBCCDD /* ResponsibleProcess.swift */; };
+		F1A2B3C4D5E60005AABBCCDD /* BoostLimiter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60006AABBCCDD /* BoostLimiter.swift */; };
+		F1A2B3C4D5E60007AABBCCDD /* MixerRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60008AABBCCDD /* MixerRender.swift */; };
+		F1A2B3C4D5E60009AABBCCDD /* MixerRoutingSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E60010AABBCCDD /* MixerRoutingSupport.swift */; };
 		F79A106E59AFCB569B0B06A2 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2D2B51A5487AAA5BB185BCB /* IOKit.framework */; };
 		FDC59E26D24C6705A2F2B3BB /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B63139E80C48CF657E75E26D /* ServiceManagement.framework */; };
 		FE20B01266C5A26E052CFE0F /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFF655570A06C454A77F1F41 /* PreferencesStore.swift */; };
@@ -90,7 +90,7 @@
 		28813659A17CC4CDA5047AF7 /* VolumeMixerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeMixerView.swift; sourceTree = "<group>"; };
 		2A1D1A77E1CDC6C38BC820BE /* MouseScrollService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MouseScrollService.swift; sourceTree = "<group>"; };
 		2C214E70176FE5C61975B18F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */ = {isa = PBXFileReference; includeInIndex = 0; path = BatteryGuardHelper; sourceTree = BUILT_PRODUCTS_DIR; };
+		2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = com.ibrardev.BatteryGuard.Helper; sourceTree = BUILT_PRODUCTS_DIR; };
 		3382AF32C9B23DD0948230C6 /* CPUStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPUStats.swift; sourceTree = "<group>"; };
 		40EB67ED7AC5D0EF78AEBE5B /* NetworkSpeedMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSpeedMonitor.swift; sourceTree = "<group>"; };
 		432BE2A6008F2F6397A2C6D1 /* LevelHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelHistoryStore.swift; sourceTree = "<group>"; };
@@ -123,11 +123,6 @@
 		BB9AA867DF6A5376B248108B /* HelperTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperTool.swift; sourceTree = "<group>"; };
 		BC819F5C1FD66E28CB8CCBCE /* MenuBarAppKitLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarAppKitLabel.swift; sourceTree = "<group>"; };
 		C2618F6D6B57F5482A06DCDC /* VolumeMixerService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeMixerService.swift; sourceTree = "<group>"; };
-		F1A2B3C4D5E60002AABBCCDD /* TapGainEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGainEngine.swift; sourceTree = "<group>"; };
-		F1A2B3C4D5E60004AABBCCDD /* ResponsibleProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsibleProcess.swift; sourceTree = "<group>"; };
-		F1A2B3C4D5E60006AABBCCDD /* BoostLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoostLimiter.swift; sourceTree = "<group>"; };
-		F1A2B3C4D5E60008AABBCCDD /* MixerRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerRender.swift; sourceTree = "<group>"; };
-		F1A2B3C4D5E60010AABBCCDD /* MixerRoutingSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerRoutingSupport.swift; sourceTree = "<group>"; };
 		C2DE2C9237583B062101A1DC /* BatteryGuard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BatteryGuard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C45773CCE62E7AC495A201E6 /* NetworkSpeedCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSpeedCard.swift; sourceTree = "<group>"; };
 		CA6A84E99778A9D8E275ACE3 /* TemperatureMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemperatureMonitor.swift; sourceTree = "<group>"; };
@@ -138,6 +133,11 @@
 		E45A0777C608095F95CB63EF /* HelperConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperConnection.swift; sourceTree = "<group>"; };
 		E75E09FC58B2E643D2523750 /* PowerFlowCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerFlowCard.swift; sourceTree = "<group>"; };
 		E9FB0672F40C426BB3046D10 /* BatterySpecsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BatterySpecsCard.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E60002AABBCCDD /* TapGainEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapGainEngine.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E60004AABBCCDD /* ResponsibleProcess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResponsibleProcess.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E60006AABBCCDD /* BoostLimiter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoostLimiter.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E60008AABBCCDD /* MixerRender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerRender.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E60010AABBCCDD /* MixerRoutingSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerRoutingSupport.swift; sourceTree = "<group>"; };
 		F60EA2D6BCADE2C95222B7BF /* UninstallerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UninstallerView.swift; sourceTree = "<group>"; };
 		F864525358511A49F022C6FF /* RAMMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAMMonitor.swift; sourceTree = "<group>"; };
 		FB52B3F31DE6684885E05853 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
@@ -176,7 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				C2DE2C9237583B062101A1DC /* BatteryGuard.app */,
-				2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */,
+				2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -397,7 +397,7 @@
 			packageProductDependencies = (
 			);
 			productName = BatteryGuardHelper;
-			productReference = 2F40E172EFC2E4E96A0DB6FD /* BatteryGuardHelper */;
+			productReference = 2F40E172EFC2E4E96A0DB6FD /* com.ibrardev.BatteryGuard.Helper */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -442,7 +442,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8CC61B294DC1F8EFC9EAF6B8 /* BatteryGuardHelper in Resources */,
+				8CC61B294DC1F8EFC9EAF6B8 /* com.ibrardev.BatteryGuard.Helper in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -555,6 +555,7 @@
 		04DBE0D539F62797F66B504E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BatteryGuard/Resources/BatteryGuard.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -577,6 +578,7 @@
 		0711A35365E072684C6B98F9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = BatteryGuard/Resources/BatteryGuard.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -599,6 +601,7 @@
 		4A266231880F590982205C5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_ENTITLEMENTS = BatteryGuardHelper/BatteryGuardHelper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -628,6 +631,7 @@
 		676A6FBA7808EE516FB83006 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_ENTITLEMENTS = BatteryGuardHelper/BatteryGuardHelper.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
