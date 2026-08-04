@@ -8,17 +8,19 @@ import SwiftUI
 enum DashboardSection: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
-    case dashboard = "Dashboard"
+    case dashboard    = "Dashboard"
     case chargeControl = "Charge Control"
-    case energyUse = "Energy Use"
-    case log = "Log"
-    case uninstaller = "Uninstaller"
+    case energyUse    = "Energy Use"
+    case volumeMixer  = "Volume Mixer"
+    case log          = "Log"
+    case uninstaller  = "Uninstaller"
 
     var icon: String {
         switch self {
         case .dashboard:      return "gauge.with.dots.needle.bottom.50percent"
         case .chargeControl:  return "bolt.badge.clock"
         case .energyUse:      return "bolt.fill"
+        case .volumeMixer:    return "speaker.wave.3.fill"
         case .log:            return "terminal"
         case .uninstaller:    return "trash"
         }
@@ -29,6 +31,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .dashboard:      return .blue
         case .chargeControl:  return .green
         case .energyUse:      return .orange
+        case .volumeMixer:    return .teal
         case .log:            return .purple
         case .uninstaller:    return .red
         }

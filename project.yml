@@ -91,6 +91,7 @@ targets:
       - path: BatteryGuard/Dashboard/Cards/EnergyAppsCard.swift
       - path: BatteryGuard/Dashboard/Cards/CalibrationCard.swift
       - path: BatteryGuard/Dashboard/Cards/NetworkSpeedCard.swift
+      - path: BatteryGuard/Dashboard/Cards/VolumeMixerView.swift
       # Settings
       - path: BatteryGuard/Settings/SettingsView.swift
       # Uninstaller
@@ -103,6 +104,7 @@ targets:
       - path: BatteryGuard/Models/GPUStats.swift
       - path: BatteryGuard/Models/TemperatureReading.swift
       - path: BatteryGuard/Models/UninstallerModels.swift
+      - path: BatteryGuard/Models/VolumeApp.swift
       # Services
       - path: BatteryGuard/Services/BatteryMonitor.swift
       - path: BatteryGuard/Services/RAMMonitor.swift
@@ -116,6 +118,7 @@ targets:
       - path: BatteryGuard/Services/PreferencesStore.swift
       - path: BatteryGuard/Services/MouseScrollService.swift
       - path: BatteryGuard/Services/UninstallerService.swift
+      - path: BatteryGuard/Services/VolumeMixerService.swift
       # XPC client
       - path: BatteryGuard/XPC/HelperConnection.swift
       # ViewModel

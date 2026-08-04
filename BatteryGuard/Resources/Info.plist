@@ -28,6 +28,12 @@
 	<string>Copyright © 2024 IbrarDev. Open Source.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSAudioCaptureUsageDescription</key>
+	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
+	<key>NSSystemAudioCaptureUsageDescription</key>
+	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
 		<key>com.ibrardev.BatteryGuard.Helper</key>

@@ -55,6 +55,9 @@ struct DashboardView: View {
             EnergyAppsCard()
                 .padding()
                 .frame(maxWidth: 500)
+        case .volumeMixer:
+            VolumeMixerView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .log:
             LogView()
         case .uninstaller:
