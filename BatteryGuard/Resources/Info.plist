@@ -34,6 +34,8 @@
 	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
 	<key>NSSystemAudioCaptureUsageDescription</key>
 	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
+	<key>NSAccessibilityUsageDescription</key>
+	<string>BatteryGuard memerlukan izin Aksesibilitas untuk mendeteksi jenis perangkat scroll (mouse fisik vs trackpad) dan membalikkan arah scroll mouse secara otomatis, tanpa mengubah pengaturan sistem apapun.</string>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
 		<key>com.ibrardev.BatteryGuard.Helper</key>

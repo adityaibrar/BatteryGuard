@@ -11,6 +11,7 @@ struct MenuBarView: View {
     @EnvironmentObject var viewModel: SystemStatsViewModel
     @EnvironmentObject var prefs: PreferencesStore
     @EnvironmentObject var helperInstaller: HelperInstaller
+    @ObservedObject private var mouseService = MouseScrollService.shared
     @Environment(\.openWindow) private var openWindow
 
     /// Nilai sementara slider — bebas per-1%, XPC hanya dipanggil saat drag selesai (onEditingChanged)
@@ -37,6 +38,13 @@ struct MenuBarView: View {
             chargeControlSection
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
+
+            Divider()
+
+            // MARK: Mouse Scroll Guard
+            mouseScrollSection
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
 
             // MARK: Helper Status (jika ada error)
             if let error = viewModel.chargeLimitError {
@@ -233,6 +241,50 @@ struct MenuBarView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Mouse Scroll Guard Section
+
+    private var mouseScrollSection: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Image(systemName: "computermouse")
+                        .font(.caption)
+                        .foregroundStyle(mouseService.isActive ? .indigo : .secondary)
+
+                    Text("Mouse Scroll")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+
+                Text(mouseStatusSubtitle)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: Binding(
+                get: { prefs.mouseAutoScrollEnabled },
+                set: { enabled in
+                    prefs.mouseAutoScrollEnabled = enabled
+                    if enabled {
+                        mouseService.start(userInitiated: true)
+                    } else {
+                        mouseService.stop()
+                    }
+                }
+            ))
+            .toggleStyle(.switch)
+            .controlSize(.small)
+        }
+    }
+
+    private var mouseStatusSubtitle: String {
+        if !prefs.mouseAutoScrollEnabled { return "Disabled" }
+        if !mouseService.hasAccessibilityPermission { return "Needs Accessibility" }
+        return mouseService.isActive ? "Inverted · Trackpad natural" : "Inactive"
     }
 
     // MARK: - Helper Error Banner

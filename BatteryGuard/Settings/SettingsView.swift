@@ -187,6 +187,13 @@ private struct MouseSettingsTab: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
 
+            // MARK: Direction Options
+            Section("Arah Pengguliran (Inversion)") {
+                Toggle("Balikkan Arah Vertikal (Y-Axis)", isOn: $prefs.mouseInvertVertical)
+                Toggle("Balikkan Arah Horizontal (X-Axis)", isOn: $prefs.mouseInvertHorizontal)
+            }
+            .disabled(!prefs.mouseAutoScrollEnabled)
+
             // MARK: Accessibility Permission
             Section("Accessibility Permission") {
                 HStack(spacing: 10) {

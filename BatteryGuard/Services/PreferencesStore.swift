@@ -74,8 +74,12 @@ final class PreferencesStore: ObservableObject {
 
     /// Master toggle: pisahkan scroll direction mouse (normal) vs trackpad (natural)
     /// Menggunakan CGEventTap — tidak mengubah System Settings apapun.
-    /// Default false: user harus opt-in secara sadar (perlu Accessibility permission)
-    @AppStorage("mouseAutoScrollEnabled") var mouseAutoScrollEnabled: Bool = false
+    /// Default true: otomatis aktif saat Accessibility permission tersedia
+    @AppStorage("mouseAutoScrollEnabled") var mouseAutoScrollEnabled: Bool = true
+    /// Balik arah scroll vertikal pada mouse fisik
+    @AppStorage("mouseInvertVertical") var mouseInvertVertical: Bool = true
+    /// Balik arah scroll horizontal pada mouse fisik
+    @AppStorage("mouseInvertHorizontal") var mouseInvertHorizontal: Bool = false
 
     // MARK: - Calibration
 

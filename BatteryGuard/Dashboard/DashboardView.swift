@@ -51,6 +51,9 @@ struct DashboardView: View {
             mainDashboardGrid
         case .chargeControl:
             chargeControlView
+        case .mouse:
+            MouseControlView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .energyUse:
             EnergyAppsCard()
                 .padding()
