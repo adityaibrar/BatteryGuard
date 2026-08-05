@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.ibrardev.BatteryGuard.Helper</string>
+	<string>com.ibrardev.Ozone.Helper</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -18,12 +18,12 @@
 	<string>1</string>
 	<key>MachServices</key>
 	<dict>
-		<key>com.ibrardev.BatteryGuard.Helper</key>
+		<key>com.ibrardev.Ozone.Helper</key>
 		<true/>
 	</dict>
 	<key>SMAuthorizedClients</key>
 	<array>
-		<string>identifier "com.ibrardev.BatteryGuard"</string>
+		<string>identifier "com.ibrardev.Ozone"</string>
 	</array>
 </dict>
 </plist>

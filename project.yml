@@ -1,4 +1,4 @@
-name: BatteryGuard
+name: Ozone
 options:
   bundleIdPrefix: com.ibrardev
   deploymentTarget:
@@ -23,7 +23,7 @@ targets:
   # ─────────────────────────────────────────────
   # MARK: - Main App Target
   # ─────────────────────────────────────────────
-  BatteryGuard:
+  Ozone:
     type: application
     platform: macOS
     deploymentTarget: "13.0"
@@ -33,16 +33,16 @@ targets:
       properties:
         LSUIElement: true
         NSPrincipalClass: NSApplication
-        CFBundleDisplayName: BatteryGuard
-        CFBundleIdentifier: com.ibrardev.BatteryGuard
+        CFBundleDisplayName: Ozone
+        CFBundleIdentifier: com.ibrardev.Ozone
         CFBundleVersion: "1"
         CFBundleShortVersionString: "1.0.0"
         CFBundlePackageType: APPL
         LSMinimumSystemVersion: "13.0"
         NSHumanReadableCopyright: "Copyright © 2024 IbrarDev. Open Source."
-        NSInputMonitoringUsageDescription: "BatteryGuard requires Input Monitoring permission to count keyboard key presses across all applications."
+        NSInputMonitoringUsageDescription: "Ozone requires Input Monitoring permission to count keyboard key presses across all applications."
         SMPrivilegedExecutables:
-          "com.ibrardev.BatteryGuard.Helper": "identifier \"com.ibrardev.BatteryGuard.Helper\""
+          "com.ibrardev.Ozone.Helper": "identifier \"com.ibrardev.Ozone.Helper\""
 
     entitlements:
       path: BatteryGuard/Resources/BatteryGuard.entitlements
@@ -54,17 +54,20 @@ targets:
 
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ibrardev.BatteryGuard
-        PRODUCT_NAME: BatteryGuard
+        PRODUCT_BUNDLE_IDENTIFIER: com.ibrardev.Ozone
+        PRODUCT_NAME: Ozone
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
         INFOPLIST_FILE: BatteryGuard/Resources/Info.plist
         CODE_SIGN_ENTITLEMENTS: BatteryGuard/Resources/BatteryGuard.entitlements
         CODE_SIGN_STYLE: Automatic
         ENABLE_APP_SANDBOX: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
     # Semua source file main app — explicit list untuk avoid duplikasi
     sources:
+      # Assets
+      - path: BatteryGuard/Assets.xcassets
       # Shared protocol (di-include ke kedua target)
       - path: Shared/BatteryGuardXPCProtocol.swift
         buildPhase: sources
@@ -138,7 +141,7 @@ targets:
 
     # Helper dependencies & copying
     dependencies:
-      - target: BatteryGuardHelper
+      - target: OzoneHelper
       # SDK dependencies
       - sdk: ServiceManagement.framework
       - sdk: IOKit.framework
@@ -147,13 +150,13 @@ targets:
       - name: Copy Helper & Plist to Bundle
         script: |
           mkdir -p "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons"
-          cp "${SRCROOT}/BatteryGuard/Resources/com.ibrardev.BatteryGuard.Helper.plist" "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/"
-          cp "${CONFIGURATION_BUILD_DIR}/com.ibrardev.BatteryGuard.Helper" "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/MacOS/"
+          cp "${SRCROOT}/BatteryGuard/Resources/com.ibrardev.Ozone.Helper.plist" "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons/"
+          cp "${CONFIGURATION_BUILD_DIR}/com.ibrardev.Ozone.Helper" "${CONFIGURATION_BUILD_DIR}/${CONTENTS_FOLDER_PATH}/MacOS/"
 
   # ─────────────────────────────────────────────
   # MARK: - Privileged Helper Target
   # ─────────────────────────────────────────────
-  BatteryGuardHelper:
+  OzoneHelper:
     type: tool
     platform: macOS
     deploymentTarget: "13.0"
@@ -161,13 +164,13 @@ targets:
     info:
       path: BatteryGuardHelper/Info.plist
       properties:
-        CFBundleIdentifier: com.ibrardev.BatteryGuard.Helper
+        CFBundleIdentifier: com.ibrardev.Ozone.Helper
         CFBundleVersion: "1"
         CFBundleShortVersionString: "1.0.0"
         SMAuthorizedClients:
-          - "identifier \"com.ibrardev.BatteryGuard\""
+          - "identifier \"com.ibrardev.Ozone\""
         MachServices:
-          "com.ibrardev.BatteryGuard.Helper": true
+          "com.ibrardev.Ozone.Helper": true
 
     entitlements:
       path: BatteryGuardHelper/BatteryGuardHelper.entitlements
@@ -176,8 +179,8 @@ targets:
 
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.ibrardev.BatteryGuard.Helper
-        PRODUCT_NAME: com.ibrardev.BatteryGuard.Helper
+        PRODUCT_BUNDLE_IDENTIFIER: com.ibrardev.Ozone.Helper
+        PRODUCT_NAME: com.ibrardev.Ozone.Helper
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
         INFOPLIST_FILE: BatteryGuardHelper/Info.plist
@@ -202,13 +205,13 @@ targets:
       - sdk: IOKit.framework
 
 schemes:
-  BatteryGuard:
+  Ozone:
     build:
       targets:
-        BatteryGuard: all
-        BatteryGuardHelper: all
+        Ozone: all
+        OzoneHelper: all
     run:
       config: Debug
-      executable: BatteryGuard
+      executable: Ozone
     archive:
       config: Release

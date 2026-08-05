@@ -11,7 +11,7 @@ class LogViewModel: ObservableObject {
     func startLogging() {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/usr/bin/log")
-        task.arguments = ["stream", "--predicate", "process == \"com.ibrardev.BatteryGuard.Helper\"", "--info"]
+        task.arguments = ["stream", "--predicate", "process == \"com.ibrardev.Ozone.Helper\"", "--info"]
         
         let pipe = Pipe()
         task.standardOutput = pipe

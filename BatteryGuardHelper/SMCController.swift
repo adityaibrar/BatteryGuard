@@ -288,7 +288,7 @@ final class ChargeMonitor {
         checkAndEnforce()
 
         // Setup periodic timer di background queue
-        let queue = DispatchQueue(label: "com.ibrardev.BatteryGuard.chargeMonitor",
+        let queue = DispatchQueue(label: "com.ibrardev.Ozone.chargeMonitor",
                                   qos: .utility)
         let t = DispatchSource.makeTimerSource(queue: queue)
         t.schedule(deadline: .now() + pollInterval, repeating: pollInterval)

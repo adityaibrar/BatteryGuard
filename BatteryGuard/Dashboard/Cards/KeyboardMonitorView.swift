@@ -178,7 +178,7 @@ struct KeyboardMonitorView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
 
-                    Text("macOS memerlukan izin **Input Monitoring** di Pengaturan Sistem agar BatteryGuard dapat mencatat penekanan tombol dari keyboard internal maupun eksternal.")
+                    Text("macOS memerlukan izin **Input Monitoring** di Pengaturan Sistem agar Ozone dapat mencatat penekanan tombol dari keyboard internal maupun eksternal.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -193,15 +193,15 @@ struct KeyboardMonitorView: View {
                             .font(.caption2)
                             .foregroundStyle(.secondary)
 
-                        Text("2. Jika **BatteryGuard** ada di daftar, aktifkan sakelarnya.")
+                        Text("2. Jika **Ozone** ada di daftar, aktifkan sakelarnya.")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
 
-                        Text("3. **Jika belum muncul di daftar:** Klik **Tampilkan di Finder**, lalu tekan tombol **'+'** di Pengaturan Sistem dan pilih (atau drag) file **BatteryGuard.app**.")
+                        Text("3. **Jika belum muncul di daftar:** Klik **Tampilkan di Finder**, lalu tekan tombol **'+'** di Pengaturan Sistem dan pilih (atau drag) file **Ozone.app**.")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
 
-                        Text("4. Jika muncul dialog *\"Quit & Reopen\"*, pilih **Quit & Reopen** (atau klik **Restart BatteryGuard** di bawah).")
+                        Text("4. Jika muncul dialog *\"Quit & Reopen\"*, pilih **Quit & Reopen** (atau klik **Restart Ozone** di bawah).")
                             .font(.caption2)
                             .foregroundStyle(.secondary)
                     }
@@ -257,7 +257,7 @@ struct KeyboardMonitorView: View {
                 } label: {
                     HStack(spacing: 4) {
                         Image(systemName: "arrow.triangle.2.circlepath")
-                        Text("Restart BatteryGuard")
+                        Text("Restart Ozone")
                     }
                     .font(.caption)
                 }

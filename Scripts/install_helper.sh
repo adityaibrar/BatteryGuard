@@ -1,17 +1,17 @@
 #!/bin/bash
 # install_helper.sh
-# Script untuk install BatteryGuard Helper sebagai LaunchDaemon
+# Script untuk install Ozone Helper sebagai LaunchDaemon
 # Jalankan SEKALI dari Terminal dengan: sudo bash install_helper.sh
 #
 # Setelah ini, helper akan otomatis start saat Mac dinyalakan
 
 set -e
 
-APP_PATH="/Applications/BatteryGuard.app"
-HELPER_BINARY="$APP_PATH/Contents/MacOS/com.ibrardev.BatteryGuard.Helper"
-PLIST_SRC="$APP_PATH/Contents/Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist"
-HELPER_DEST="/Library/PrivilegedHelperTools/com.ibrardev.BatteryGuard.Helper"
-PLIST_DEST="/Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist"
+APP_PATH="/Applications/Ozone.app"
+HELPER_BINARY="$APP_PATH/Contents/MacOS/com.ibrardev.Ozone.Helper"
+PLIST_SRC="$APP_PATH/Contents/Library/LaunchDaemons/com.ibrardev.Ozone.Helper.plist"
+HELPER_DEST="/Library/PrivilegedHelperTools/com.ibrardev.Ozone.Helper"
+PLIST_DEST="/Library/LaunchDaemons/com.ibrardev.Ozone.Helper.plist"
 
 # Cek root
 if [ "$(id -u)" -ne 0 ]; then
@@ -20,12 +20,12 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
-echo "🔧 Installing BatteryGuard Helper..."
+echo "🔧 Installing Ozone Helper..."
 
 # Cek app ada
 if [ ! -d "$APP_PATH" ]; then
-  echo "❌ BatteryGuard.app tidak ada di /Applications!"
-  echo "   Pastikan Anda sudah copy BatteryGuard.app ke /Applications"
+  echo "❌ Ozone.app tidak ada di /Applications!"
+  echo "   Pastikan Anda sudah copy Ozone.app ke /Applications"
   exit 1
 fi
 
@@ -62,11 +62,11 @@ launchctl bootstrap system "$PLIST_DEST"
 
 # Verifikasi
 sleep 2
-if launchctl print system/com.ibrardev.BatteryGuard.Helper &>/dev/null; then
+if launchctl print system/com.ibrardev.Ozone.Helper &>/dev/null; then
   echo ""
-  echo "✅ BatteryGuard Helper berhasil diinstall dan berjalan!"
-  echo "   Buka BatteryGuard.app untuk mengatur charge limit."
+  echo "✅ Ozone Helper berhasil diinstall dan berjalan!"
+  echo "   Buka Ozone.app untuk mengatur charge limit."
 else
   echo ""
-  echo "⚠️  Helper mungkin belum berjalan. Coba restart Mac, lalu buka BatteryGuard.app"
+  echo "⚠️  Helper mungkin belum berjalan. Coba restart Mac, lalu buka Ozone.app"
 fi

@@ -121,7 +121,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Helper Installation
 
     private func checkAndInstallHelper() {
-        let service = SMAppService.daemon(plistName: "com.ibrardev.BatteryGuard.Helper.plist")
+        let service = SMAppService.daemon(plistName: "com.ibrardev.Ozone.Helper.plist")
         switch service.status {
         case .enabled:          break
         case .requiresApproval: showHelperApprovalNotification()

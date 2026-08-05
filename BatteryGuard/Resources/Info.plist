@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>BatteryGuard</string>
+	<string>Ozone</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.ibrardev.BatteryGuard</string>
+	<string>com.ibrardev.Ozone</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -30,10 +30,10 @@
 	<string>NSApplication</string>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
-		<key>com.ibrardev.BatteryGuard.Helper</key>
-		<string>identifier "com.ibrardev.BatteryGuard.Helper"</string>
+		<key>com.ibrardev.Ozone.Helper</key>
+		<string>identifier "com.ibrardev.Ozone.Helper"</string>
 	</dict>
 	<key>NSInputMonitoringUsageDescription</key>
-	<string>BatteryGuard requires Input Monitoring permission to count keyboard key presses across all applications.</string>
+	<string>Ozone requires Input Monitoring permission to count keyboard key presses across all applications.</string>
 </dict>
 </plist>

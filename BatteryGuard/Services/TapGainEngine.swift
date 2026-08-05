@@ -76,7 +76,7 @@ final class TapGainEngine: GainEngine {
 
         // 2. Buat Private Aggregate Device dengan Sub-Tap
         let aggregateConfig: [String: Any] = [
-            kAudioAggregateDeviceNameKey:          "BatteryGuard Mixer",
+            kAudioAggregateDeviceNameKey:          "Ozone Mixer",
             kAudioAggregateDeviceUIDKey:           UUID().uuidString,
             kAudioAggregateDeviceIsPrivateKey:     true,
             kAudioAggregateDeviceMainSubDeviceKey: outputDeviceUID,

@@ -350,15 +350,15 @@ private struct AboutTab: View {
                 .foregroundStyle(.green)
 
             VStack(spacing: 4) {
-                Text("BatteryGuard")
+                Text("Ozone")
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Version 1.0.0 (Fase 1)")
+                Text("Version 1.0.0")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                Text("Open source battery charge limiter\nfor Apple Silicon Macs")
+                Text("System Monitor, Battery & Keyboard Utility\nfor Apple Silicon Macs")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

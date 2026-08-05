@@ -27,16 +27,17 @@ final class LevelHistoryStore: ObservableObject {
 
     private let filename = "level_history.json"
     private var entries: [LevelEntry] = []
-    private let queue = DispatchQueue(label: "com.ibrardev.BatteryGuard.LevelHistory", qos: .utility)
+    private let queue = DispatchQueue(label: "com.ibrardev.Ozone.LevelHistory", qos: .utility)
 
     private var lastRecordedKey: String = ""
 
     private var fileURL: URL? {
-        FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first?
-            .appendingPathComponent("BatteryGuard")
-            .appendingPathComponent(filename)
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        let ozoneDir = appSupport?.appendingPathComponent("Ozone")
+        if let dir = ozoneDir {
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        return ozoneDir?.appendingPathComponent(filename)
     }
 
     @Published var points: [LevelEntry] = []

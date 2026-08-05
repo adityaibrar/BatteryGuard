@@ -16,7 +16,7 @@ enum HelperConnectionError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .helperNotInstalled:
-            return "BatteryGuard Helper belum ter-install. Buka Settings untuk install."
+            return "Ozone Helper belum ter-install. Buka Settings untuk install."
         case .connectionFailed(let msg):
             return "Gagal koneksi ke helper: \(msg)"
         case .operationFailed(let msg):
@@ -65,7 +65,7 @@ final class HelperInstaller: ObservableObject {
     private func isDaemonRunning() -> Bool {
         let task = Process()
         task.executableURL = URL(fileURLWithPath: "/bin/launchctl")
-        task.arguments = ["print", "system/com.ibrardev.BatteryGuard.Helper"]
+        task.arguments = ["print", "system/com.ibrardev.Ozone.Helper"]
         let pipe = Pipe()
         task.standardOutput = pipe
         task.standardError = pipe
@@ -90,10 +90,10 @@ final class HelperInstaller: ObservableObject {
     private func installViaAppleScript() {
         guard let appURL = Bundle.main.bundleURL as URL? else { return }
         let appPath = appURL.path
-        let helperBinary = "\(appPath)/Contents/MacOS/com.ibrardev.BatteryGuard.Helper"
-        let plistSrc = "\(appPath)/Contents/Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist"
-        let helperDest = "/Library/PrivilegedHelperTools/com.ibrardev.BatteryGuard.Helper"
-        let plistDest = "/Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist"
+        let helperBinary = "\(appPath)/Contents/MacOS/com.ibrardev.Ozone.Helper"
+        let plistSrc = "\(appPath)/Contents/Library/LaunchDaemons/com.ibrardev.Ozone.Helper.plist"
+        let helperDest = "/Library/PrivilegedHelperTools/com.ibrardev.Ozone.Helper"
+        let plistDest = "/Library/LaunchDaemons/com.ibrardev.Ozone.Helper.plist"
         
         let cmds = [
             "mkdir -p /Library/PrivilegedHelperTools",
@@ -140,7 +140,7 @@ final class HelperInstaller: ObservableObject {
     }
 
     func uninstall() {
-        let script = "launchctl bootout system/com.ibrardev.BatteryGuard.Helper && rm -f /Library/LaunchDaemons/com.ibrardev.BatteryGuard.Helper.plist && rm -f /Library/PrivilegedHelperTools/com.ibrardev.BatteryGuard.Helper"
+        let script = "launchctl bootout system/com.ibrardev.Ozone.Helper && rm -f /Library/LaunchDaemons/com.ibrardev.Ozone.Helper.plist && rm -f /Library/PrivilegedHelperTools/com.ibrardev.Ozone.Helper"
         let appleScript = """
         do shell script "\(script)" with administrator privileges
         """
@@ -157,7 +157,7 @@ final class HelperInstaller: ObservableObject {
 
 // MARK: - XPC Connection Manager
 
-/// Thread-safe wrapper untuk NSXPCConnection ke BatteryGuardHelper
+/// Thread-safe wrapper untuk NSXPCConnection ke Ozone Helper
 final class HelperConnection {
 
     static let shared = HelperConnection()
@@ -178,7 +178,7 @@ final class HelperConnection {
             return existing
         }
 
-        let newConnection = NSXPCConnection(machServiceName: "com.ibrardev.BatteryGuard.Helper")
+        let newConnection = NSXPCConnection(machServiceName: "com.ibrardev.Ozone.Helper")
         newConnection.remoteObjectInterface = makeBatteryGuardXPCInterface()
 
         // Handle koneksi yang putus

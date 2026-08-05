@@ -48,10 +48,10 @@ protocol BatteryGuardXPCProtocol {
 
 extension BatteryGuardXPCProtocol {
     /// Bundle ID helper — harus match dengan target name di Xcode
-    static var helperBundleID: String { "com.ibrardev.BatteryGuard.Helper" }
+    static var helperBundleID: String { "com.ibrardev.Ozone.Helper" }
 
     /// Nama Mach service untuk XPC listener (harus match di helper's Info.plist)
-    static var machServiceName: String { "com.ibrardev.BatteryGuard.Helper" }
+    static var machServiceName: String { "com.ibrardev.Ozone.Helper" }
 }
 
 // MARK: - NSXPCInterface Factory

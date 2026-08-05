@@ -34,14 +34,15 @@ final class CycleHistoryStore {
 
     private let filename = "cycle_history.json"
     private var entries: [CycleCountEntry] = []
-    private let queue = DispatchQueue(label: "com.ibrardev.BatteryGuard.CycleHistory", qos: .utility)
+    private let queue = DispatchQueue(label: "com.ibrardev.Ozone.CycleHistory", qos: .utility)
 
     private var fileURL: URL? {
-        FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first?
-            .appendingPathComponent("BatteryGuard")
-            .appendingPathComponent(filename)
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        let ozoneDir = appSupport?.appendingPathComponent("Ozone")
+        if let dir = ozoneDir {
+            try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        }
+        return ozoneDir?.appendingPathComponent(filename)
     }
 
     private init() {

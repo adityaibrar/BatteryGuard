@@ -34,16 +34,26 @@ final class KeyboardStatsStore {
     private(set) var data: [String: DeviceStats] = [:]
 
     /// Antrian serial untuk operasi disk (mencegah race condition)
-    private let queue = DispatchQueue(label: "com.ibrardev.BatteryGuard.KeyboardStatsStore", qos: .utility)
+    private let queue = DispatchQueue(label: "com.ibrardev.Ozone.KeyboardStatsStore", qos: .utility)
 
     private let fileURL: URL = {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let batteryGuardDir = appSupport.appendingPathComponent("BatteryGuard", isDirectory: true)
+        let ozoneDir = appSupport.appendingPathComponent("Ozone", isDirectory: true)
+        let oldDir = appSupport.appendingPathComponent("BatteryGuard", isDirectory: true)
 
         // Buat direktori jika belum ada
-        try? FileManager.default.createDirectory(at: batteryGuardDir, withIntermediateDirectories: true)
+        try? FileManager.default.createDirectory(at: ozoneDir, withIntermediateDirectories: true)
 
-        return batteryGuardDir.appendingPathComponent("keyboard_stats.json")
+        let newFile = ozoneDir.appendingPathComponent("keyboard_stats.json")
+        let oldFile = oldDir.appendingPathComponent("keyboard_stats.json")
+
+        // Migrasi data lama dari BatteryGuard jika file baru belum ada
+        if !FileManager.default.fileExists(atPath: newFile.path),
+           FileManager.default.fileExists(atPath: oldFile.path) {
+            try? FileManager.default.copyItem(at: oldFile, to: newFile)
+        }
+
+        return newFile
     }()
 
     private let encoder: JSONEncoder = {

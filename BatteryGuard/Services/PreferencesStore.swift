@@ -105,7 +105,7 @@ final class PreferencesStore: ObservableObject {
     // MARK: - Helper
 
     /// Bundle ID helper untuk SMAppService
-    let helperBundleID = "com.ibrardev.BatteryGuard.Helper"
+    let helperBundleID = "com.ibrardev.Ozone.Helper"
 
     private init() {}
 }

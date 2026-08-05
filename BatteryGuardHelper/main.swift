@@ -41,7 +41,7 @@ NSLog("[Helper] BatteryGuardHelper v%@ dimulai (PID: %d)",
 
 let delegate = HelperDelegate()
 // Gunakan Mach service name yang sama seperti yang didaftarkan di launchd plist
-let listener = NSXPCListener(machServiceName: "com.ibrardev.BatteryGuard.Helper")
+let listener = NSXPCListener(machServiceName: "com.ibrardev.Ozone.Helper")
 listener.delegate = delegate
 
 // Resume listener dan masuk ke run loop — daemon harus terus berjalan

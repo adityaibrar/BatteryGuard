@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "63C3C1E65A95A1B2DDA4BEAE"
-               BuildableName = "BatteryGuard.app"
-               BlueprintName = "BatteryGuard"
-               ReferencedContainer = "container:BatteryGuard.xcodeproj">
+               BlueprintIdentifier = "92D0371CDAF27D7597B8117D"
+               BuildableName = "Ozone.app"
+               BlueprintName = "Ozone"
+               ReferencedContainer = "container:Ozone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -28,10 +28,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8380AFA61DF2F55FE252B646"
-               BuildableName = "com.ibrardev.BatteryGuard.Helper"
-               BlueprintName = "BatteryGuardHelper"
-               ReferencedContainer = "container:BatteryGuard.xcodeproj">
+               BlueprintIdentifier = "74D109683E380FAD6E154949"
+               BuildableName = "com.ibrardev.Ozone.Helper"
+               BlueprintName = "OzoneHelper"
+               ReferencedContainer = "container:Ozone.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -44,10 +44,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "63C3C1E65A95A1B2DDA4BEAE"
-            BuildableName = "BatteryGuard.app"
-            BlueprintName = "BatteryGuard"
-            ReferencedContainer = "container:BatteryGuard.xcodeproj">
+            BlueprintIdentifier = "92D0371CDAF27D7597B8117D"
+            BuildableName = "Ozone.app"
+            BlueprintName = "Ozone"
+            ReferencedContainer = "container:Ozone.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -67,10 +67,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "63C3C1E65A95A1B2DDA4BEAE"
-            BuildableName = "BatteryGuard.app"
-            BlueprintName = "BatteryGuard"
-            ReferencedContainer = "container:BatteryGuard.xcodeproj">
+            BlueprintIdentifier = "92D0371CDAF27D7597B8117D"
+            BuildableName = "Ozone.app"
+            BlueprintName = "Ozone"
+            ReferencedContainer = "container:Ozone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -84,10 +84,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "63C3C1E65A95A1B2DDA4BEAE"
-            BuildableName = "BatteryGuard.app"
-            BlueprintName = "BatteryGuard"
-            ReferencedContainer = "container:BatteryGuard.xcodeproj">
+            BlueprintIdentifier = "92D0371CDAF27D7597B8117D"
+            BuildableName = "Ozone.app"
+            BlueprintName = "Ozone"
+            ReferencedContainer = "container:Ozone.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
