@@ -13,6 +13,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
     case mouse         = "Mouse & Scroll"
     case energyUse     = "Energy Use"
     case volumeMixer   = "Volume Mixer"
+    case keyboard      = "Keyboard Monitor"
     case log           = "Log"
     case uninstaller   = "Uninstaller"
 
@@ -23,6 +24,7 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .mouse:          return "computermouse"
         case .energyUse:      return "bolt.fill"
         case .volumeMixer:    return "speaker.wave.3.fill"
+        case .keyboard:       return "keyboard"
         case .log:            return "terminal"
         case .uninstaller:    return "trash"
         }
@@ -35,7 +37,8 @@ enum DashboardSection: String, CaseIterable, Identifiable {
         case .mouse:          return .indigo
         case .energyUse:      return .orange
         case .volumeMixer:    return .teal
-        case .log:            return .purple
+        case .keyboard:       return .purple
+        case .log:            return .secondary
         case .uninstaller:    return .red
         }
     }

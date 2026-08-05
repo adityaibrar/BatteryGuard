@@ -28,18 +28,12 @@
 	<string>Copyright © 2024 IbrarDev. Open Source.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
-	<key>NSAudioCaptureUsageDescription</key>
-	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
-	<key>NSSystemAudioCaptureUsageDescription</key>
-	<string>BatteryGuard memerlukan izin audio sistem untuk mengatur dan menyesuaikan volume per-aplikasi secara independen.</string>
-	<key>NSAccessibilityUsageDescription</key>
-	<string>BatteryGuard memerlukan izin Aksesibilitas untuk mendeteksi jenis perangkat scroll (mouse fisik vs trackpad) dan membalikkan arah scroll mouse secara otomatis, tanpa mengubah pengaturan sistem apapun.</string>
 	<key>SMPrivilegedExecutables</key>
 	<dict>
 		<key>com.ibrardev.BatteryGuard.Helper</key>
 		<string>identifier "com.ibrardev.BatteryGuard.Helper"</string>
 	</dict>
+	<key>NSInputMonitoringUsageDescription</key>
+	<string>BatteryGuard requires Input Monitoring permission to count keyboard key presses across all applications.</string>
 </dict>
 </plist>

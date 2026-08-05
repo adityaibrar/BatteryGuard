@@ -38,11 +38,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupSystemNotifications()
         // One-shot check: deteksi mouse & terapkan natural scroll setting
         mouseScroll.start()
+        // Start keyboard monitor jika aktif di preferences
+        if prefs.keyboardMonitorEnabled {
+            KeyboardMonitorService.shared.start()
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         // Hentikan event tap saat app quit
         mouseScroll.stop()
+        // Hentikan keyboard monitor & simpan data saat app quit
+        KeyboardMonitorService.shared.stop()
         // Helper daemon tetap berjalan setelah app quit (by design)
     }
 

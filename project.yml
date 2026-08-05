@@ -40,6 +40,7 @@ targets:
         CFBundlePackageType: APPL
         LSMinimumSystemVersion: "13.0"
         NSHumanReadableCopyright: "Copyright © 2024 IbrarDev. Open Source."
+        NSInputMonitoringUsageDescription: "BatteryGuard requires Input Monitoring permission to count keyboard key presses across all applications."
         SMPrivilegedExecutables:
           "com.ibrardev.BatteryGuard.Helper": "identifier \"com.ibrardev.BatteryGuard.Helper\""
 
@@ -92,6 +93,8 @@ targets:
       - path: BatteryGuard/Dashboard/Cards/CalibrationCard.swift
       - path: BatteryGuard/Dashboard/Cards/NetworkSpeedCard.swift
       - path: BatteryGuard/Dashboard/Cards/VolumeMixerView.swift
+      - path: BatteryGuard/Dashboard/Cards/MouseControlView.swift
+      - path: BatteryGuard/Dashboard/Cards/KeyboardMonitorView.swift
       # Settings
       - path: BatteryGuard/Settings/SettingsView.swift
       # Uninstaller
@@ -105,6 +108,7 @@ targets:
       - path: BatteryGuard/Models/TemperatureReading.swift
       - path: BatteryGuard/Models/UninstallerModels.swift
       - path: BatteryGuard/Models/VolumeApp.swift
+      - path: BatteryGuard/Models/KeyboardModels.swift
       # Services
       - path: BatteryGuard/Services/BatteryMonitor.swift
       - path: BatteryGuard/Services/RAMMonitor.swift
@@ -119,6 +123,13 @@ targets:
       - path: BatteryGuard/Services/MouseScrollService.swift
       - path: BatteryGuard/Services/UninstallerService.swift
       - path: BatteryGuard/Services/VolumeMixerService.swift
+      - path: BatteryGuard/Services/BoostLimiter.swift
+      - path: BatteryGuard/Services/ResponsibleProcess.swift
+      - path: BatteryGuard/Services/MixerRender.swift
+      - path: BatteryGuard/Services/MixerRoutingSupport.swift
+      - path: BatteryGuard/Services/TapGainEngine.swift
+      - path: BatteryGuard/Services/KeyboardMonitorService.swift
+      - path: BatteryGuard/Services/KeyboardStatsStore.swift
       # XPC client
       - path: BatteryGuard/XPC/HelperConnection.swift
       # ViewModel

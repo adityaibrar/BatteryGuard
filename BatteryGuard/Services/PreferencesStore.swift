@@ -81,6 +81,12 @@ final class PreferencesStore: ObservableObject {
     /// Balik arah scroll horizontal pada mouse fisik
     @AppStorage("mouseInvertHorizontal") var mouseInvertHorizontal: Bool = false
 
+    // MARK: - Keyboard Monitor
+
+    /// Master toggle: aktifkan keyboard press counter
+    /// Default false — opt-in karena ini fitur monitoring keyboard (privacy consideration)
+    @AppStorage("keyboardMonitorEnabled") var keyboardMonitorEnabled: Bool = false
+
     // MARK: - Calibration
 
     /// Timestamp kalibrasi terakhir

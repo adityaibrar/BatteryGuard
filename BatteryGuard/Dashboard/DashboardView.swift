@@ -61,6 +61,9 @@ struct DashboardView: View {
         case .volumeMixer:
             VolumeMixerView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .keyboard:
+            KeyboardMonitorView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .log:
             LogView()
         case .uninstaller:
